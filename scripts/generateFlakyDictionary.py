@@ -1,6 +1,7 @@
 import sys
 import os
 import pprint
+import json
 
 # Global Variables
 dicFlaky = {}
@@ -11,7 +12,7 @@ def main():
 
     # Variables
     path = sys.argv[1]
-    csvFile = open(path, "r")
+    csvFile = open(path, "r", encoding='utf-8-sig')
 
     # Logic
     for line in csvFile:
@@ -26,20 +27,25 @@ def main():
     
     #Results
     printResults()
+    saveResults()
 
 def dictionaryOfFlakyTests(project, sha, flakyTest):
     if flakyTest not in dicFlaky:
-        dicFlaky[flakyTest] = sha
+        dicFlaky[flakyTest] = [project, sha]
 
 def printResults():
     # Dictionary
     pprint.pprint(dicFlaky)
-    print("Number of Flaky Tests" + len(dicFlaky))
+    print("Number of Flaky Tests: " + str(len(dicFlaky)))
+
+def saveResults():
+    with open('flakyTests.json', 'w') as json_file:
+        json.dump(dicFlaky, json_file)
 
 def checkUsage():
     #Check the programs' arguments
     if len(sys.argv) != 2 or not os.path.isfile(sys.argv[1]):
-        print("Usage: python3 info.py [path/to/file]")
+        print("Usage: python3 generateFlakyDictionary.py [path/to/file]")
         sys.exit(1)
 
 if __name__ == "__main__":
