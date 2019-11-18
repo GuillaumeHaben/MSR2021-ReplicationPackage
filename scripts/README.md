@@ -6,6 +6,5 @@
 
 ### Features
 
-* Count the number of projects
 * Count the number of total flaky tests
-* Get the commit's date for each sha
+* Get a commit for a flaky tests
