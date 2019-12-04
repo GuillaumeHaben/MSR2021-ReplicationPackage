@@ -48,6 +48,14 @@
 * Compute metrics for every flaky tests and save the results in MetricExtractor/results
 * Requires MetricExtractor project
 
+## 5. bis metricExtractor.sh
+
+`./metricExtractor.sh -projectPath ... -listPath ...`
+
+### Features
+
+* Simple script to run the Java project Metric Extractor
+
 ## Miscellaneous
 
 Beautify a JSON file:
