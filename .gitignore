@@ -1,2 +1,3 @@
 ./projects/*
 ./results/*
+*.json
