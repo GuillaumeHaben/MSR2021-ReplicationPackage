@@ -15,7 +15,7 @@ def main():
         dicNonFlaky = flakyTest
     
     for project in dicNonFlaky:
-        f = open("./listReady4ME/" + project["ProjectName"].split("/")[-1] + "/master.txt", "w")
+        f = open("../../sandbox/listReady4ME/" + project["ProjectName"].split("/")[-1] + "/master.txt", "w")
         for classes in project["Classes"]:
             for currentClass in classes:
                 for currentMethod in classes[currentClass]:

@@ -20,8 +20,6 @@ def main():
     os.chdir("../")
     saveResults(dicFlaky)
 
-
-
 def saveResults(dicFlaky):
     with open('testMethods.json', 'w') as json_file:
         json.dump(dicFlaky, json_file)

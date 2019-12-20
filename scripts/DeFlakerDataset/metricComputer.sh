@@ -7,7 +7,7 @@ fi
 
 PROJECTS_SOURCES=$1
 LIST_PATH_FOLDER=$2
-ABSOLUTE_PATH="/Users/guillaume.haben/Documents/Work/datasets/DeFlaker/"
+ABSOLUTE_PATH="/Users/guillaume.haben/Documents/Work/projects/DeFlaker/sandbox/"
 
 # Check if directories exist ###
 if [ ! -d $PROJECTS_SOURCES ] || [ ! -d $LIST_PATH_FOLDER ] 
@@ -33,15 +33,15 @@ for PROJECT in $LIST_PATH_FOLDER/*; do
         COMMIT_NUM="$(basename -- $COMMIT .txt)"
         LIST_PATH=$ABSOLUTE_PATH"results/"$PROJECT_NAME"/"$COMMIT_NUM".txt"
         # Go to project sources
-        cd "../"$PROJECTS_SOURCES"/"$PROJECT_NAME
+        cd "/Users/guillaume.haben/Documents/Work/projects/DeFlaker/sandbox/projects/"$PROJECT_NAME
         # Checkout and run MetricExtractor
         git checkout $COMMIT_NUM
         # DEBUG echo "LIST FILE: "$LIST_PATH
-
         echo "PROJECT PATH: "$PROJECT_PATH
         echo "LIST FILE: "$LIST_PATH
-        cd "/Users/guillaume.haben/Documents/Work/projects/MetricExtractor"
-        sh $ABSOLUTE_PATH"scripts/metricExtractor.sh" -projectPath $PROJECT_PATH -listPath $LIST_PATH
+        /opt/apache-maven-3.6.2/bin/mvn clean
+        #cd "/Users/guillaume.haben/Documents/Work/projects/MetricExtractor"
+        sh "/Users/guillaume.haben/Documents/Work/projects/DeFlaker/scripts/DeFlakerDataset/metricExtractor.sh" -projectPath $PROJECT_PATH -listPath $LIST_PATH
     done
     # Switch back to master before processing next project.
     git checkout master
