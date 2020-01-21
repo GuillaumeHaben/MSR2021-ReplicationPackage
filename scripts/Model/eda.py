@@ -15,7 +15,7 @@ def main():
     data = pd.read_json(dataSetPath)
 
     sns_plot = sns.pairplot(data, hue="Label", 
-    vars=["DepthOfInheritance", "HasTimeoutInAnnotations", "NumberOfAsserts", "NumberOfLines"])
+    vars=["DepthOfInheritance", "HasTimeoutInAnnotations", "NumberOfAsynchronousWaits", "NumberOfFiles"])
     #plt.show()
     sns_plot.savefig("output.png")
 

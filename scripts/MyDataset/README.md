@@ -47,3 +47,15 @@
 
 * Take `nonFlakyTests.json` from step 4.
 * Create a proper folder structure (per project, per commit -> in this case master) ready for `metricComputer.sh`
+
+
+## 6. addLabel.py
+
+`python3 addLabel.py ./path/to/nonFlakyTests.json`
+
+#### Features
+
+* Take `nonFlakyTests.json`.
+* Add the property "Label": 0 for each element
+* Save to a file
+

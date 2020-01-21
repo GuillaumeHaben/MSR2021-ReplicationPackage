@@ -2,6 +2,7 @@ import sys
 import os
 import json
 import glob
+import pprint
 
 def main():
     # Checks
@@ -11,49 +12,67 @@ def main():
     allMethodsPath = sys.argv[2]
 
     dicFlaky = []
-    allMethods = []
-
     dicNonFlaky = []
-
+    dicAllMethods = []
 
     with open(flakyListPath, 'r') as flakyListFile:
         flakyTests = json.load(flakyListFile)
-        dicFlaky = flakyTests
 
-    with open(allMethodsPath, 'r') as allMethodsFile:
-        testMethods = json.load(allMethodsFile)
-        allMethods = testMethods
+
+    # Build Array of All methods.
+    # Format: [project.class.method, ...]
+    for file in os.listdir(allMethodsPath):
+        if file.endswith(".txt"):
+            fileName = os.path.join(allMethodsPath, file)
+
+            with open(fileName, 'r') as currentProjectFile:
+                count = 0
+                for line in currentProjectFile:
+                    if count == 0:
+                        projectName = line.rstrip()
+                        # print(line.rstrip())
+                    else:
+                        dicAllMethods.append(projectName + "." + line.rstrip())
+                    count +=1 
+
+    # Build Array of Flaky Tests.
+    # Format: [project.class.method, ...]
+    for flakyTest in flakyTests:
+        projectName = flakyTest["ProjectName"].split("/")[-1]
+        className = flakyTest["ClassName"]
+        methodName = flakyTest["MethodName"]
+        dicFlaky.append(projectName + "." + className + "." + methodName)
+   
+    # For el in All Methods, check if it is in Flaky.
+    for el in dicAllMethods:
+        if el not in dicFlaky:
+            dicNonFlaky.append(el)
     
-    count = 0
-
-    for project in allMethods:
-        for classes in project["Classes"]:
-            for currentClass in classes:
-                for currentMethod in classes[currentClass]:
-                    for flakyTest in dicFlaky:
-                        if project["ProjectName"] == flakyTest["ProjectName"]:
-                            if currentMethod == flakyTest["MethodName"] and currentClass == flakyTest["ClassName"]:
-                                count += 1
-                                print(currentMethod)
-        #print("Project: ", project["ProjectName"])
-        #print("Flaky Tests found: ", count)
-
-                
-        
-    
-
-
-
     saveResults(dicNonFlaky)
 
-def saveResults(dicFlaky):
-    with open('nonFlakyTests.json', 'w') as json_file:
-        json.dump(dicFlaky, json_file)
+def saveResults(dic):
+    for el in dic:
+        projectName = el.split(".")[0]
+        className = el.split(".")[1]
+        methodName = el.split(".")[2]
+        print(projectName)
+        print(className)
+        print(methodName)
+        if not os.path.exists("./NF4ME/" + projectName):
+            os.makedirs("./NF4ME/" + projectName)
+        else:
+            f = open("./NF4ME/" + projectName + "/master.txt", "a+")
+            f.write(className + "." + methodName + "\n")
+            f.close()
+
+
+    #with open('nonFlakyTests.json', 'w') as json_file:
+    #    json.dump(dic, json_file)
 
 def checkUsage():
     #Check the programs' arguments
-    if len(sys.argv) != 3 or not os.path.isfile(sys.argv[1]) or not os.path.isfile(sys.argv[2]):
-        print("Usage: python3 findNonFlaky.py [path/to/flakyList.json] [path/to/allMethods.json]")
+    if len(sys.argv) != 3 or not os.path.isfile(sys.argv[1]) or not os.path.isdir(sys.argv[2]):
+        print("Usage: python3 findNonFlaky.py [path/to/flakyList.json] [path/to/listTestMethods/]")
         sys.exit(1)
 
 if __name__ == "__main__":

@@ -23,6 +23,10 @@ def main():
     NumberOfAsserts = [i['NumberOfAsserts'] for i in dicFlaky]
     NumberOfAsynchronousWaits = [i['NumberOfAsynchronousWaits'] for i in dicFlaky]
     NumberOfLines = [i['NumberOfLines'] for i in dicFlaky]
+    NumberOfThreads = [i['NumberOfThreads'] for i in dicFlaky]
+    NumberOfDates = [i['NumberOfDates'] for i in dicFlaky]
+    NumberOfRandoms = [i['NumberOfRandoms'] for i in dicFlaky]
+    NumberOfFiles = [i['NumberOfFiles'] for i in dicFlaky]
 
     printInfo(NumberOfLines, "Number of Lines")
     printInfo(NumberOfAsynchronousWaits, "Number of Asynchronous waits")
@@ -30,6 +34,10 @@ def main():
     printInfo(HasTimeoutInAnnotations, "Has Timeout Annotations")
     printInfo(DepthOfInheritance, "Depth of Inheritance")
     printInfo(CyclomaticComplexity, "Cyclomatic Complexity")
+    printInfo(NumberOfThreads, "Number of Threads")
+    printInfo(NumberOfDates, "Number of Dates")
+    printInfo(NumberOfRandoms, "Number of Randoms")
+    printInfo(NumberOfFiles, "Number of Files")
 
 
 

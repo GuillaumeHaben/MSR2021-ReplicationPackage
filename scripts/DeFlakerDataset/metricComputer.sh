@@ -39,7 +39,7 @@ for PROJECT in $LIST_PATH_FOLDER/*; do
         # DEBUG echo "LIST FILE: "$LIST_PATH
         echo "PROJECT PATH: "$PROJECT_PATH
         echo "LIST FILE: "$LIST_PATH
-        /opt/apache-maven-3.6.2/bin/mvn clean
+        /opt/apache-maven-3.6.2/bin/mvn clean > /dev/null 2>&1
         #cd "/Users/guillaume.haben/Documents/Work/projects/MetricExtractor"
         sh "/Users/guillaume.haben/Documents/Work/projects/DeFlaker/scripts/DeFlakerDataset/metricExtractor.sh" -projectPath $PROJECT_PATH -listPath $LIST_PATH
     done
