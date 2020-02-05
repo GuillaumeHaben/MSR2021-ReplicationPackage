@@ -6,7 +6,11 @@ import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
 from sklearn.ensemble import RandomForestClassifier 
-
+from sklearn.metrics import precision_score 
+from sklearn.metrics import recall_score 
+from sklearn.metrics import confusion_matrix
+from imblearn.over_sampling import SMOTE
+from collections import Counter
 
 def main():
     # Checks
@@ -20,7 +24,7 @@ def main():
 
 
     # Build X_train
-    x_train = dataSet.iloc[:, [1,3,6,7,8,9,10,11,12]].values
+    x_train = dataSet.iloc[:, [1,3,6,7,8,9,11,12]].values
     print("X train: ")
     print(x_train)
     print("\n")
@@ -32,32 +36,59 @@ def main():
     print("\n")
 
     # Build X_test
-    x_test = testMethods.iloc[:, [1,3,6,7,8,9,10,11,12]].values
+    x_test = testMethods.iloc[:, [1,3,6,7,8,9,11,12]].values
+    print("X test: ")
+    print(x_test)
+    print("\n")
+
+    # Build Y_test
+    y_test = testMethods.iloc[:, 4].values
+    print("Y test: ")
+    print(y_test)
+    print("\n")
+
+    # Re Sampling using SMOTE
+    X_resampled, y_resampled = SMOTE().fit_resample(x_train, y_train)
+
+    print("Balance in y_train", Counter(y_train))
+    print("Balance in y_resampled", Counter(y_resampled))
+
 
     # Create classifier object 
     classifier = RandomForestClassifier(n_estimators = 100, random_state = 0) 
   
     # Fit the regressor with x and y data 
-    classifier.fit(x_train, y_train)   
-    
+    #classifier.fit(x_train, y_train)   
+    classifier.fit(X_resampled, y_resampled)   
+
     
     print("\nTest Methods predictions:")
     prediction = classifier.predict_proba(x_test)
-    #print(prediction)
+    prediction_test = classifier.predict(x_test)
     
-    # Global Analysis
-    flakyTestsFound = []
-    nbTests = len(prediction)
-    for i in range(0, nbTests):
-        el = prediction[i]
+    print("\nTest set metrics: ")
+    print("Precision: ", precision_score(y_test, prediction_test))
+    print("Recall: ", recall_score(y_test, prediction_test))
+    
+    # print("Features importances: ", classifier.feature_importances_)
 
-        # Count number of Flaky Tests
-        if el[0] < 0.5:
-            flakyTestsFound.append(i)
+    # Global Analysis
+    # flakyTestsFound = []
+    # nbTests = len(prediction)
+    # for i in range(0, nbTests):
+    #     el = prediction[i]
+
+    #     # Count number of Flaky Tests
+    #     if el[0] < 0.5:
+    #         flakyTestsFound.append(i)
         
-    print("Number of Tests: ", str(nbTests))
-    print("Number of Flaky Tests: ", str(len(flakyTestsFound)))
-    print("Percentage: ", str(int(100 * len(flakyTestsFound) / nbTests)),"%")
+    # print("Number of Tests: ", str(nbTests))
+    # print("Number of Flaky Tests: ", str(len(flakyTestsFound)))
+    # print("Percentage: ", str(int(100 * len(flakyTestsFound) / nbTests)),"%")
+
+    # Confusion Matrix
+    # conf_mat = confusion_matrix(y_true=y_test, y_pred=prediction_test)
+    # print('Confusion matrix:\n', conf_mat)
 
 
     # Flaky Tests Found Analysis
@@ -65,7 +96,6 @@ def main():
     #     print("\n")
     #     print(testMethods.iloc[flakyTestFoundIndex])
 
-    print(classifier.feature_importances_)
 
 
 def checkUsage():

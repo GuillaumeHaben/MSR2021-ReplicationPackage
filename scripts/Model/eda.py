@@ -5,7 +5,7 @@ import glob
 import seaborn as sns
 import pandas as pd
 import matplotlib.pyplot as plt
-
+import numpy as np
 
 def main():
     # Checks
@@ -13,13 +13,20 @@ def main():
 
     dataSetPath = sys.argv[1]
     data = pd.read_json(dataSetPath)
+    # Only take features columns
+    df1 = data[["CyclomaticComplexity", "HasTimeoutInAnnotations", "NumberOfAsserts", "NumberOfAsynchronousWaits",
+    "NumberOfDates", "NumberOfFiles", "NumberOfLines", "NumberOfRandoms", "NumberOfThreads", "Label"]]
 
-    sns_plot = sns.pairplot(data, hue="Label", 
-    vars=["DepthOfInheritance", "HasTimeoutInAnnotations", "NumberOfAsynchronousWaits", "NumberOfFiles"])
-    #plt.show()
-    sns_plot.savefig("output.png")
+    # Mask for Triangular Matrix
+    matrix = np.triu(df1.corr())
 
+    # Seaborn Correlation Heatmap
+    sns_plot = sns.heatmap(df1.corr(), annot=True, vmin=0, vmax=1, center= 0.5, cmap= 'coolwarm', mask=matrix, square=True)
+    plt.show()
 
+    # Optiona, to save output as .png file
+    # fig = sns_plot.get_figure()
+    # fig.savefig("output.png")
 
 def checkUsage():
     #Check the programs' arguments

@@ -20,19 +20,19 @@ def main():
 
 
     # Build X_train
-    x_train = dataSet.iloc[:, [1,2,3,5,6,7]].values
+    x_train = dataSet.iloc[:, [1,2,3,6,7,8]].values
     print("X train: ")
     print(x_train)
     print("\n")
 
     # Build Y_train
-    y_train = dataSet.iloc[:, 9].values
+    y_train = dataSet.iloc[:, 4].values
     print("Y train: ")
     print(y_train)
     print("\n")
 
     # Build X_test
-    x_test = testMethods.iloc[:, [1,2,3,5,6,7]].values
+    x_test = testMethods.iloc[:, [1,2,3,6,7,10]].values
 
     # Create classifier object 
     classifier = RandomForestClassifier(n_estimators = 100, random_state = 0) 

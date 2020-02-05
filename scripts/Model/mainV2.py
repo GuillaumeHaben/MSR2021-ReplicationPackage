@@ -26,7 +26,7 @@ def main():
 
 
     # Build X_train
-    x_train = data_train.iloc[:, [1,2,3,6,7,8,9,10,11,12]].values
+    x_train = data_train.iloc[:, [1,3,6,7,8,9,10,11,12]].values
     print("X train: ")
     print(x_train)
     print("\n")
@@ -38,7 +38,7 @@ def main():
     print("\n")
 
     # Build X_test
-    x_test = data_test.iloc[:, [1,2,3,6,7,8,9,10,11,12]].values
+    x_test = data_test.iloc[:, [1,3,6,7,8,9,10,11,12]].values
     print("X test: ")
     print(x_test)
     print("\n")
