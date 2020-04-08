@@ -7,7 +7,6 @@ fi
 
 PROJECTS_SOURCES=$1
 LIST_PATH_FOLDER=$2
-ABSOLUTE_PATH="/Users/guillaume.haben/Documents/Work/projects/DeFlaker/sandbox/"
 
 # Check if directories exist ###
 if [ ! -d $PROJECTS_SOURCES ] || [ ! -d $LIST_PATH_FOLDER ] 
@@ -21,8 +20,8 @@ for PROJECT in $LIST_PATH_FOLDER/*; do
     # Get Project name
     PROJECT_NAME="$(basename -- $PROJECT)"
     # Get Project path
-    INFO_PROJECT=$ABSOLUTE_PATH"results/"$PROJECT_NAME
-    PROJECT_PATH=$ABSOLUTE_PATH"projects/"$PROJECT_NAME
+    INFO_PROJECT=$LIST_PATH_FOLDER"/"$PROJECT_NAME
+    PROJECT_PATH=$PROJECTS_SOURCES"/"$PROJECT_NAME
     cd $INFO_PROJECT
     echo "PROJECT: "$PROJECT_NAME
     # DEBUG echo "PROJECT PATH: "$PROJECT_PATH
@@ -31,9 +30,9 @@ for PROJECT in $LIST_PATH_FOLDER/*; do
     for COMMIT in ./*; do
         # Get Commit name
         COMMIT_NUM="$(basename -- $COMMIT .txt)"
-        LIST_PATH=$ABSOLUTE_PATH"results/"$PROJECT_NAME"/"$COMMIT_NUM".txt"
+        LIST_PATH=$INFO_PROJECT"/"$COMMIT_NUM".txt"
         # Go to project sources
-        cd "/Users/guillaume.haben/Documents/Work/projects/DeFlaker/sandbox/projects/"$PROJECT_NAME
+        cd $PROJECTS_SOURCES"/"$PROJECT_NAME
         # Checkout and run MetricExtractor
         git checkout $COMMIT_NUM
         # DEBUG echo "LIST FILE: "$LIST_PATH

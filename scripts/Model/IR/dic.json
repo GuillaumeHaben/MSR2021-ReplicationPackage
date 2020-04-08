@@ -1,0 +1,1568 @@
+[
+    {
+        "Body": "{\n    try {\n        new org.apache.commons.exec.CommandLine(\"\");\n        org.junit.Assert.fail(\"Must throw IllegalArgumentException\");\n    } catch (final java.lang.IllegalArgumentException e) {\n    }\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testExecutableZeroLengthString"
+    },
+    {
+        "Body": "{\n    if (org.apache.commons.exec.OS.isFamilyOpenVms()) {\n        java.lang.System.out.println(\"The test 'testExecuteWatchdogSync' currently hangs on the following OS : \" + java.lang.System.getProperty(\"os.name\"));\n        return;\n    }\n    final long timeout = 10000;\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(foreverTestScript);\n    final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n    executor.setWorkingDirectory(new java.io.File(\".\"));\n    final org.apache.commons.exec.ExecuteWatchdog watchdog = new org.apache.commons.exec.ExecuteWatchdog(timeout);\n    executor.setWatchdog(watchdog);\n    try {\n        executor.execute(cl);\n    } catch (final org.apache.commons.exec.ExecuteException e) {\n        java.lang.Thread.sleep(timeout);\n        final int nrOfInvocations = getOccurrences(readFile(this.foreverOutputFile), '.');\n        org.junit.Assert.assertTrue(executor.getWatchdog().killedProcess());\n        org.junit.Assert.assertTrue(\"killing the subprocess did not work : \" + nrOfInvocations, (nrOfInvocations > 5) && (nrOfInvocations <= 11));\n        return;\n    } catch (final java.lang.Throwable t) {\n        org.junit.Assert.fail(t.getMessage());\n    }\n    org.junit.Assert.assertTrue(\"Killed process should be true\", executor.getWatchdog().killedProcess());\n    org.junit.Assert.fail(\"Process did not create ExecuteException when killed\");\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWatchdogSync"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(environmentScript);\n    final int exitValue = exec.execute(cl);\n    org.junit.Assert.assertFalse(exec.isFailure(exitValue));\n}",
+        "ClassName": "LogOutputStreamTest",
+        "Label": "test",
+        "MethodName": "testStdout"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(errorTestScript);\n    exec.setExitValue(org.apache.commons.exec.DefaultExecutorTest.SUCCESS_STATUS);\n    try {\n        exec.execute(cl);\n        org.junit.Assert.fail(\"Must throw ExecuteException\");\n    } catch (final org.apache.commons.exec.ExecuteException e) {\n        org.junit.Assert.assertTrue(exec.isFailure(e.getExitValue()));\n    }\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWithCustomExitValue2"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(\"test\");\n    cmdl.addArguments(\"\\'foo\\' \\\"bar\\\"\");\n    org.junit.Assert.assertEquals(\"[test, foo, bar]\", cmdl.toString());\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"test\", \"foo\", \"bar\" }, cmdl.toStrings());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testAddArgumentsWithQuotes"
+    },
+    {
+        "Body": "{\n    if (!org.apache.commons.exec.OS.isFamilyWindows()) {\n        return;\n    }\n    final java.util.Map<java.lang.String, java.lang.String> procEnvironment = org.apache.commons.exec.environment.EnvironmentUtils.getProcEnvironment();\n    for (final java.util.Map.Entry<java.lang.String, java.lang.String> entry : procEnvironment.entrySet()) {\n        final java.lang.String key = entry.getKey();\n        final java.lang.String value = entry.getValue();\n        org.junit.Assert.assertEquals(value, procEnvironment.get(key.toLowerCase(java.util.Locale.ENGLISH)));\n        org.junit.Assert.assertEquals(value, procEnvironment.get(key.toUpperCase(java.util.Locale.ENGLISH)));\n    }\n    org.apache.commons.exec.environment.EnvironmentUtils.addVariableToEnvironment(procEnvironment, \"foo=bar\");\n    org.junit.Assert.assertEquals(\"bar\", procEnvironment.get(\"FOO\"));\n    org.junit.Assert.assertEquals(\"bar\", procEnvironment.get(\"Foo\"));\n    org.junit.Assert.assertEquals(\"bar\", procEnvironment.get(\"foo\"));\n}",
+        "ClassName": "EnvironmentUtilsTest",
+        "Label": "test",
+        "MethodName": "testGetProcEnvironmentCaseInsensitiveLookup"
+    },
+    {
+        "Body": "{\n    if (org.apache.commons.exec.OS.isFamilyUnix()) {\n        final org.apache.commons.exec.ExecuteWatchdog watchdog = new org.apache.commons.exec.ExecuteWatchdog(org.apache.commons.exec.AbstractExecTest.WATCHDOG_TIMEOUT);\n        final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n        final org.apache.commons.exec.CommandLine command = new org.apache.commons.exec.CommandLine(\"sleep\");\n        command.addArgument(\"60\");\n        executor.setStreamHandler(new org.apache.commons.exec.PumpStreamHandler(java.lang.System.out, java.lang.System.err));\n        executor.setWatchdog(watchdog);\n        executor.execute(command);\n    } else {\n        throw new org.apache.commons.exec.ExecuteException(testNotSupportedForCurrentOperatingSystem(), 0);\n    }\n}",
+        "ClassName": "Exec65Test",
+        "Label": "test",
+        "MethodName": "testExec65WitSleepUsingSleepCommandDirectly"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(foreverTestScript);\n    final org.apache.commons.exec.DefaultExecuteResultHandler handler = new org.apache.commons.exec.DefaultExecuteResultHandler();\n    final org.apache.commons.exec.ExecuteWatchdog watchdog = new org.apache.commons.exec.ExecuteWatchdog(3000);\n    exec.setWatchdog(watchdog);\n    exec.execute(cl, handler);\n    java.lang.Thread.sleep(6000);\n    watchdog.destroyProcess();\n    handler.waitFor(org.apache.commons.exec.DefaultExecutorTest.WAITFOR_TIMEOUT);\n    org.junit.Assert.assertTrue(\"Watchdog should have killed the process already\", watchdog.killedProcess());\n    org.junit.Assert.assertFalse(\"Watchdog is no longer watching the process\", watchdog.isWatching());\n    org.junit.Assert.assertTrue(\"ResultHandler received a result\", handler.hasResult());\n    org.junit.Assert.assertNotNull(\"ResultHandler received an exception as result\", handler.getException());\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteAsyncWithTooLateUserTermination"
+    },
+    {
+        "Body": "{\n    if (org.apache.commons.exec.OS.isFamilyUnix()) {\n        final java.io.FileInputStream fis = new java.io.FileInputStream(\"./NOTICE.txt\");\n        final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(redirectScript);\n        final org.apache.commons.exec.PumpStreamHandler pumpStreamHandler = new org.apache.commons.exec.PumpStreamHandler(baos, baos, fis);\n        final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n        executor.setWorkingDirectory(new java.io.File(\".\"));\n        executor.setStreamHandler(pumpStreamHandler);\n        final int exitValue = executor.execute(cl);\n        fis.close();\n        final java.lang.String result = baos.toString().trim();\n        org.junit.Assert.assertTrue(result, result.indexOf(\"Finished reading from stdin\") > 0);\n        org.junit.Assert.assertFalse(\"exitValue=\" + exitValue, exec.isFailure(exitValue));\n    } else\n        if (org.apache.commons.exec.OS.isFamilyWindows()) {\n            java.lang.System.err.println(\"The code samples to do that in windows look like a joke ... :-( .., no way I'm doing that\");\n            java.lang.System.err.println(\"The test 'testExecuteWithRedirectedStreams' does not support the following OS : \" + java.lang.System.getProperty(\"os.name\"));\n            return;\n        } else {\n            java.lang.System.err.println(\"The test 'testExecuteWithRedirectedStreams' does not support the following OS : \" + java.lang.System.getProperty(\"os.name\"));\n            return;\n        }\n\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWithRedirectedStreams"
+    },
+    {
+        "Body": "{\n    exec.setExitValue(org.apache.commons.exec.DefaultExecutorTest.ERROR_STATUS);\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(errorTestScript);\n    exec.execute(cl);\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWithCustomExitValue1"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(testScript);\n    final org.apache.commons.exec.PumpStreamHandler pumpStreamHandler = new org.apache.commons.exec.PumpStreamHandler(java.lang.System.out, java.lang.System.err, java.lang.System.in);\n    final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n    executor.setStreamHandler(pumpStreamHandler);\n    final int exitValue = executor.execute(cl);\n    org.junit.Assert.assertFalse(exec.isFailure(exitValue));\n}",
+        "ClassName": "Exec33Test",
+        "Label": "test",
+        "MethodName": "testExec33"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = org.apache.commons.exec.CommandLine.parse(\"test foo bar\");\n    org.junit.Assert.assertEquals(\"[test, foo, bar]\", cmdl.toString());\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"test\", \"foo\", \"bar\" }, cmdl.toStrings());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testParseCommandLine"
+    },
+    {
+        "Body": "{\n    try {\n        org.apache.commons.exec.CommandLine.parse(null);\n        org.junit.Assert.fail(\"IllegalArgumentException must be thrown due to incorrect command line\");\n    } catch (final java.lang.IllegalArgumentException e) {\n    }\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testParseCommandLineWithNull"
+    },
+    {
+        "Body": "{\n    final java.util.Map<java.lang.String, java.lang.String> vars = new java.util.HashMap<java.lang.String, java.lang.String>();\n    vars.put(\"foo\", \"FOO\");\n    vars.put(\"bar\", \"BAR\");\n    org.junit.Assert.assertEquals(\"This is a FOO & BAR test\", org.apache.commons.exec.util.StringUtils.stringSubstitution(\"This is a FOO & BAR test\", vars, true).toString());\n}",
+        "ClassName": "StringUtilTest",
+        "Label": "test",
+        "MethodName": "testNoStringSubstitution"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(testScript);\n    cl.addArgument(\"test $;`(0)[1]{2}\");\n    final int exitValue = exec.execute(cl);\n    org.junit.Assert.assertTrue(baos.toString().trim().indexOf(\"test $;`(0)[1]{2}\") > 0);\n    org.junit.Assert.assertFalse(exec.isFailure(exitValue));\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWithFancyArg"
+    },
+    {
+        "Body": "{\n    try {\n        org.apache.commons.exec.CommandLine.parse(\"test \\\"foo bar\");\n        org.junit.Assert.fail(\"IllegalArgumentException must be thrown due to uneven quotes\");\n    } catch (final java.lang.IllegalArgumentException e) {\n    }\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testParseCommandLineWithUnevenQuotes"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(testScript);\n    final org.apache.commons.exec.ShutdownHookProcessDestroyer processDestroyer = new org.apache.commons.exec.ShutdownHookProcessDestroyer();\n    exec.setProcessDestroyer(processDestroyer);\n    org.junit.Assert.assertTrue(processDestroyer.size() == 0);\n    org.junit.Assert.assertTrue(processDestroyer.isAddedAsShutdownHook() == false);\n    final int exitValue = exec.execute(cl);\n    org.junit.Assert.assertEquals(\"FOO..\", baos.toString().trim());\n    org.junit.Assert.assertFalse(exec.isFailure(exitValue));\n    org.junit.Assert.assertTrue(processDestroyer.size() == 0);\n    org.junit.Assert.assertTrue(processDestroyer.isAddedAsShutdownHook() == false);\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWithProcessDestroyer"
+    },
+    {
+        "Body": "{\n    final java.lang.String commandline = \"./script/jrake cruise:publish_installers \" + (((\"INSTALLER_VERSION=unstable_2_1 \" + \"INSTALLER_PATH=\\\"/var/lib/ cruise-agent/installers\\\" \") + \"INSTALLER_DOWNLOAD_SERVER=\\'something\\' \") + \"WITHOUT_HELP_DOC=true\");\n    final org.apache.commons.exec.CommandLine cmdl = org.apache.commons.exec.CommandLine.parse(commandline);\n    final java.lang.String[] args = cmdl.getArguments();\n    org.junit.Assert.assertEquals(args[0], \"cruise:publish_installers\");\n    org.junit.Assert.assertEquals(args[1], \"INSTALLER_VERSION=unstable_2_1\");\n    org.junit.Assert.assertEquals(args[4], \"WITHOUT_HELP_DOC=true\");\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testParseComplexCommandLine2"
+    },
+    {
+        "Body": "{\n    try {\n        new org.apache.commons.exec.CommandLine(((java.lang.String) (null)));\n        org.junit.Assert.fail(\"Must throw IllegalArgumentException\");\n    } catch (final java.lang.IllegalArgumentException e) {\n    }\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testNullExecutable"
+    },
+    {
+        "Body": "{\n    java.lang.String expected;\n    if (org.apache.commons.exec.OS.isFamilyWindows()) {\n        expected = \"dotnetfx.exe\\n\" + (\"/q:a\\n\" + \"/c:\\\"install.exe /l \\\"\\\"\\\\Documents and Settings\\\\myusername\\\\Local Settings\\\\Temp\\\\netfx.log\\\"\\\" /q\\\"\");\n    } else\n        if (org.apache.commons.exec.OS.isFamilyUnix()) {\n            expected = \"dotnetfx.exe\\n\" + (\"/q:a\\n\" + \"/c:\\\"install.exe /l \\\"\\\"/Documents and Settings/myusername/Local Settings/Temp/netfx.log\\\"\\\" /q\\\"\");\n        } else {\n            java.lang.System.err.println(\"The test 'testExec36_3' does not support the following OS : \" + java.lang.System.getProperty(\"os.name\"));\n            return;\n        }\n\n    org.apache.commons.exec.CommandLine cmdl;\n    final java.io.File file = new java.io.File(\"/Documents and Settings/myusername/Local Settings/Temp/netfx.log\");\n    final java.util.Map<java.lang.String, java.io.File> map = new java.util.HashMap<java.lang.String, java.io.File>();\n    map.put(\"FILE\", file);\n    cmdl = new org.apache.commons.exec.CommandLine(printArgsScript);\n    cmdl.setSubstitutionMap(map);\n    cmdl.addArgument(\"dotnetfx.exe\", false);\n    cmdl.addArgument(\"/q:a\", false);\n    cmdl.addArgument(\"/c:\\\"install.exe /l \\\"\\\"${FILE}\\\"\\\" /q\\\"\", false);\n    final int exitValue = exec.execute(cmdl);\n    final java.lang.String result = baos.toString().trim();\n    org.junit.Assert.assertFalse(exec.isFailure(exitValue));\n    if (org.apache.commons.exec.OS.isFamilyUnix()) {\n        org.junit.Assert.assertEquals(expected, result);\n    }\n}",
+        "ClassName": "Exec36Test",
+        "Label": "test",
+        "MethodName": "testExec36_2"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(testScript);\n    final org.apache.commons.exec.PumpStreamHandler pumpStreamHandler = new org.apache.commons.exec.PumpStreamHandler(null, null);\n    final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n    executor.setStreamHandler(pumpStreamHandler);\n    final int exitValue = executor.execute(cl);\n    org.junit.Assert.assertFalse(exec.isFailure(exitValue));\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWithNullOutErr"
+    },
+    {
+        "Body": "{\n    final java.util.Map<java.lang.String, java.lang.String> procEnvironment = org.apache.commons.exec.environment.EnvironmentUtils.getProcEnvironment();\n    org.apache.commons.exec.environment.EnvironmentUtils.addVariableToEnvironment(procEnvironment, \"foo=bAr\");\n    org.junit.Assert.assertEquals(\"bAr\", procEnvironment.get(\"foo\"));\n}",
+        "ClassName": "EnvironmentUtilsTest",
+        "Label": "test",
+        "MethodName": "testCaseInsensitiveVariableLookup"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(errorTestScript);\n    final org.apache.commons.exec.DefaultExecuteResultHandler resultHandler = new org.apache.commons.exec.DefaultExecuteResultHandler();\n    exec.execute(cl, resultHandler);\n    resultHandler.waitFor(2000);\n    org.junit.Assert.assertTrue(resultHandler.hasResult());\n    org.junit.Assert.assertTrue(exec.isFailure(resultHandler.getExitValue()));\n    org.junit.Assert.assertNotNull(resultHandler.getException());\n    org.junit.Assert.assertEquals(\"FOO..\", baos.toString().trim());\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteAsyncWithError"
+    },
+    {
+        "Body": "{\n    final java.util.HashMap<java.lang.String, java.lang.String> substitutionMap = new java.util.HashMap<java.lang.String, java.lang.String>();\n    substitutionMap.put(\"in\", \"source.jpg\");\n    substitutionMap.put(\"out\", \"target.jpg\");\n    final org.apache.commons.exec.CommandLine cmdl = org.apache.commons.exec.CommandLine.parse(\"cmd /C convert ${in} -resize \\\"\\'500x> \\'\\\" ${out}\", substitutionMap);\n    org.junit.Assert.assertEquals(\"[cmd, /C, convert, source.jpg, -resize, \\\"500x> \\\", target.jpg]\", cmdl.toString());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testParseComplexCommandLine1"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(nonExistingTestScript);\n    final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n    executor.setWatchdog(new org.apache.commons.exec.ExecuteWatchdog(org.apache.commons.exec.ExecuteWatchdog.INFINITE_TIMEOUT));\n    executor.execute(cl);\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteNonExistingApplicationWithWatchDog"
+    },
+    {
+        "Body": "{\n    if (org.apache.commons.exec.OS.isFamilyUnix()) {\n        org.apache.commons.exec.CommandLine cmdl;\n        final java.lang.String expected = \"./script/jrake\\n\" + ((((\"cruise:publish_installers\\n\" + \"INSTALLER_VERSION=unstable_2_1\\n\") + \"INSTALLER_PATH=\\\"/var/lib/ cruise-agent/installers\\\"\\n\") + \"INSTALLER_DOWNLOAD_SERVER=\\'something\\'\\n\") + \"WITHOUT_HELP_DOC=true\");\n        cmdl = new org.apache.commons.exec.CommandLine(printArgsScript);\n        cmdl.addArgument(\"./script/jrake\", false);\n        cmdl.addArgument(\"cruise:publish_installers\", false);\n        cmdl.addArgument(\"INSTALLER_VERSION=unstable_2_1\", false);\n        cmdl.addArgument(\"INSTALLER_PATH=\\\"/var/lib/ cruise-agent/installers\\\"\", false);\n        cmdl.addArgument(\"INSTALLER_DOWNLOAD_SERVER='something'\", false);\n        cmdl.addArgument(\"WITHOUT_HELP_DOC=true\", false);\n        final int exitValue = exec.execute(cmdl);\n        final java.lang.String result = baos.toString().trim();\n        org.junit.Assert.assertFalse(exec.isFailure(exitValue));\n        org.junit.Assert.assertEquals(expected, result);\n    } else {\n        java.lang.System.err.println(\"The test 'testExec36_1' does not support the following OS : \" + java.lang.System.getProperty(\"os.name\"));\n        return;\n    }\n}",
+        "ClassName": "Exec36Test",
+        "Label": "test",
+        "MethodName": "testExec36_1"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(\"test\");\n    cmdl.addArgument(\"foo\");\n    cmdl.addArgument(\"ba'r\");\n    org.junit.Assert.assertEquals(\"[test, foo, \\\"ba\\'r\\\"]\", cmdl.toString());\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"test\", \"foo\", \"\\\"ba\\'r\\\"\" }, cmdl.toStrings());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testAddArgumentWithSingleQuote"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(\"test\");\n    cmdl.addArguments(\"foo bar\");\n    org.junit.Assert.assertEquals(\"[test, foo, bar]\", cmdl.toString());\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"test\", \"foo\", \"bar\" }, cmdl.toStrings());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testAddArguments"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(\"test\");\n    cmdl.addArgument(\"\\'foo\\'\");\n    cmdl.addArgument(\"\\\"bar\\\"\");\n    cmdl.addArgument(\"\\\"fe z\\\"\");\n    org.junit.Assert.assertEquals(\"[test, foo, bar, \\\"fe z\\\"]\", cmdl.toString());\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"test\", \"foo\", \"bar\", \"\\\"fe z\\\"\" }, cmdl.toStrings());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testAddArgumentWithQuotesAround"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(\"test\");\n    cmdl.addArgument(null);\n    org.junit.Assert.assertEquals(\"[test]\", cmdl.toString());\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"test\" }, cmdl.toStrings());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testAddNullArgument"
+    },
+    {
+        "Body": "{\n    if (org.apache.commons.exec.OS.isFamilyUnix()) {\n        final java.io.File testScript = org.apache.commons.exec.TestUtil.resolveScriptForOS(\"./src/test/scripts/standalone\");\n        final org.apache.commons.exec.Executor exec = new org.apache.commons.exec.DefaultExecutor();\n        exec.setStreamHandler(new org.apache.commons.exec.PumpStreamHandler());\n        final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(testScript);\n        exec.execute(cl);\n        org.junit.Assert.assertTrue(new java.io.File(\"./target/mybackup.gz\").exists());\n    }\n}",
+        "ClassName": "StandAloneTest",
+        "Label": "test",
+        "MethodName": "testMe"
+    },
+    {
+        "Body": "{\n    org.apache.commons.exec.CommandLine cmdl;\n    java.lang.String[] result;\n    final java.util.HashMap<java.lang.String, java.lang.String> substitutionMap = new java.util.HashMap<java.lang.String, java.lang.String>();\n    substitutionMap.put(\"JAVA_HOME\", \"C:\\\\Programme\\\\jdk1.5.0_12\");\n    substitutionMap.put(\"appMainClass\", \"foo.bar.Main\");\n    cmdl = new org.apache.commons.exec.CommandLine(\"${JAVA_HOME}\\\\bin\\\\java\");\n    cmdl.addArgument(\"-class\");\n    cmdl.addArgument(\"${appMainClass}\");\n    cmdl.addArgument(\"${file}\");\n    substitutionMap.put(\"file\", \"C:\\\\Document And Settings\\\\documents\\\\432431.pdf\");\n    cmdl.setSubstitutionMap(substitutionMap);\n    result = cmdl.toStrings();\n    org.junit.Assert.assertEquals(org.apache.commons.exec.util.StringUtils.fixFileSeparatorChar(\"C:\\\\Programme\\\\jdk1.5.0_12\\\\bin\\\\java\"), result[0]);\n    org.junit.Assert.assertEquals(\"-class\", result[1]);\n    org.junit.Assert.assertEquals(\"foo.bar.Main\", result[2]);\n    org.junit.Assert.assertEquals(\"\\\"C:\\\\Document And Settings\\\\documents\\\\432431.pdf\\\"\", result[3]);\n    final java.lang.String executable = cmdl.getExecutable();\n    final java.lang.String[] arguments = cmdl.getArguments();\n    org.junit.Assert.assertEquals(org.apache.commons.exec.util.StringUtils.fixFileSeparatorChar(\"C:\\\\Programme\\\\jdk1.5.0_12\\\\bin\\\\java\"), executable);\n    org.junit.Assert.assertEquals(\"-class\", arguments[0]);\n    org.junit.Assert.assertEquals(\"foo.bar.Main\", arguments[1]);\n    org.junit.Assert.assertEquals(\"\\\"C:\\\\Document And Settings\\\\documents\\\\432431.pdf\\\"\", arguments[2]);\n    substitutionMap.put(\"file\", \"C:\\\\Document And Settings\\\\documents\\\\432432.pdf\");\n    result = cmdl.toStrings();\n    org.junit.Assert.assertEquals(org.apache.commons.exec.util.StringUtils.fixFileSeparatorChar(\"C:\\\\Programme\\\\jdk1.5.0_12\\\\bin\\\\java\"), result[0]);\n    org.junit.Assert.assertEquals(\"-class\", result[1]);\n    org.junit.Assert.assertEquals(\"foo.bar.Main\", result[2]);\n    org.junit.Assert.assertEquals(\"\\\"C:\\\\Document And Settings\\\\documents\\\\432432.pdf\\\"\", result[3]);\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testCommandLineParsingWithExpansion2"
+    },
+    {
+        "Body": "{\n    final java.io.File workingDir = new java.io.File(\"./target\");\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(testScript);\n    exec.setWorkingDirectory(workingDir);\n    final int exitValue = exec.execute(cl);\n    org.junit.Assert.assertEquals(\"FOO..\", baos.toString().trim());\n    org.junit.Assert.assertFalse(exec.isFailure(exitValue));\n    org.junit.Assert.assertEquals(exec.getWorkingDirectory(), workingDir);\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWithWorkingDirectory"
+    },
+    {
+        "Body": "{\n    org.apache.commons.exec.CommandLine cmdLine;\n    if (org.apache.commons.exec.OS.isFamilyWindows()) {\n        cmdLine = org.apache.commons.exec.CommandLine.parse(\"ping.exe -n 10 -w 1000 127.0.0.1\");\n    } else\n        if (\"HP-UX\".equals(java.lang.System.getProperty(\"os.name\"))) {\n            cmdLine = org.apache.commons.exec.CommandLine.parse(\"ping 127.0.0.1 -n 10\");\n        } else\n            if (org.apache.commons.exec.OS.isFamilyUnix()) {\n                cmdLine = org.apache.commons.exec.CommandLine.parse(\"ping -c 10 127.0.0.1\");\n            } else {\n                java.lang.System.err.println(\"The test 'testExec41WithStreams' does not support the following OS : \" + java.lang.System.getProperty(\"os.name\"));\n                return;\n            }\n\n\n    final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n    final org.apache.commons.exec.ExecuteWatchdog watchdog = new org.apache.commons.exec.ExecuteWatchdog(2 * 1000);\n    final org.apache.commons.exec.PumpStreamHandler pumpStreamHandler = new org.apache.commons.exec.PumpStreamHandler(java.lang.System.out, java.lang.System.err);\n    executor.setWatchdog(watchdog);\n    executor.setStreamHandler(pumpStreamHandler);\n    final long startTime = java.lang.System.currentTimeMillis();\n    try {\n        executor.execute(cmdLine);\n    } catch (final org.apache.commons.exec.ExecuteException e) {\n    }\n    final long duration = java.lang.System.currentTimeMillis() - startTime;\n    java.lang.System.out.println((\"Process completed in \" + duration) + \" millis; below is its output\");\n    if (watchdog.killedProcess()) {\n        java.lang.System.out.println(\"Process timed out and was killed by watchdog.\");\n    }\n    org.junit.Assert.assertTrue(\"The process was killed by the watchdog\", watchdog.killedProcess());\n    org.junit.Assert.assertTrue(\"Skipping the Thread.join() did not work\", duration < 9000);\n}",
+        "ClassName": "Exec41Test",
+        "Label": "test",
+        "MethodName": "testExec41WithStreams"
+    },
+    {
+        "Body": "{\n    final long timeout = 10000;\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(foreverTestScript);\n    final org.apache.commons.exec.DefaultExecuteResultHandler handler = new org.apache.commons.exec.DefaultExecuteResultHandler();\n    final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n    executor.setWorkingDirectory(new java.io.File(\".\"));\n    executor.setWatchdog(new org.apache.commons.exec.ExecuteWatchdog(timeout));\n    executor.execute(cl, handler);\n    handler.waitFor(org.apache.commons.exec.DefaultExecutorTest.WAITFOR_TIMEOUT);\n    org.junit.Assert.assertTrue(\"Killed process should be true\", executor.getWatchdog().killedProcess());\n    org.junit.Assert.assertTrue(\"ResultHandler received a result\", handler.hasResult());\n    org.junit.Assert.assertNotNull(\"ResultHandler received an exception as result\", handler.getException());\n    final int nrOfInvocations = getOccurrences(readFile(this.foreverOutputFile), '.');\n    org.junit.Assert.assertTrue(\"Killing the process did not work : \" + nrOfInvocations, (nrOfInvocations > 5) && (nrOfInvocations <= 11));\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWatchdogAsync"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(\"test\");\n    cmdl.addArgument(\"foo\");\n    cmdl.addArgument(\"bar\");\n    org.junit.Assert.assertEquals(\"[test, foo, bar]\", cmdl.toString());\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"test\", \"foo\", \"bar\" }, cmdl.toStrings());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testAddArgument"
+    },
+    {
+        "Body": "{\n    final java.util.HashMap<java.lang.String, java.lang.String> procEnvironment = new java.util.HashMap<java.lang.String, java.lang.String>();\n    procEnvironment.put(\"JAVA_HOME\", \"/usr/opt/java\");\n    final java.util.Map<java.lang.String, java.lang.String> result = org.apache.commons.exec.util.MapUtils.copy(procEnvironment);\n    org.junit.Assert.assertTrue(result.size() == 1);\n    org.junit.Assert.assertTrue(procEnvironment.size() == 1);\n    org.junit.Assert.assertEquals(\"/usr/opt/java\", result.get(\"JAVA_HOME\"));\n    result.remove(\"JAVA_HOME\");\n    org.junit.Assert.assertTrue(result.size() == 0);\n    org.junit.Assert.assertTrue(procEnvironment.size() == 1);\n}",
+        "ClassName": "MapUtilTest",
+        "Label": "test",
+        "MethodName": "testCopyMap"
+    },
+    {
+        "Body": "{\n    exec.execute(new org.apache.commons.exec.CommandLine(environmentSript));\n    final java.lang.String environment = baos.toString().trim();\n    org.junit.Assert.assertTrue(\"Found no environment variables\", environment.length() > 0);\n    org.junit.Assert.assertFalse(environment.indexOf(\"NEW_VAR\") >= 0);\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testEnvironmentVariables"
+    },
+    {
+        "Body": "{\n    try {\n        new org.apache.commons.exec.CommandLine(\"   \");\n        org.junit.Assert.fail(\"Must throw IllegalArgumentException\");\n    } catch (final java.lang.IllegalArgumentException e) {\n    }\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testExecutableWhitespaceString"
+    },
+    {
+        "Body": "{\n    org.junit.Assume.assumeFalse(\"Test is skipped on travis, because we have to be a sudoer \" + \"to make the other tests pass.\", new java.io.File(\".\").getAbsolutePath().contains(\"travis\"));\n    if (org.apache.commons.exec.OS.isFamilyUnix()) {\n        final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n        executor.setStreamHandler(new org.apache.commons.exec.PumpStreamHandler(java.lang.System.out, java.lang.System.err, java.lang.System.in));\n        executor.setWatchdog(new org.apache.commons.exec.ExecuteWatchdog(org.apache.commons.exec.AbstractExecTest.WATCHDOG_TIMEOUT));\n        final org.apache.commons.exec.CommandLine command = new org.apache.commons.exec.CommandLine(resolveTestScript(\"issues\", \"exec-65\"));\n        executor.execute(command);\n    } else {\n        throw new org.apache.commons.exec.ExecuteException(testNotSupportedForCurrentOperatingSystem(), 0);\n    }\n}",
+        "ClassName": "Exec65Test",
+        "Label": "test",
+        "MethodName": "testExec65WithSudoUsingShellScript"
+    },
+    {
+        "Body": "{\n    final java.util.Map<java.lang.String, java.lang.String> myEnvVars = new java.util.HashMap<java.lang.String, java.lang.String>();\n    myEnvVars.putAll(org.apache.commons.exec.environment.EnvironmentUtils.getProcEnvironment());\n    final java.lang.String name = \"NEW_VAR\";\n    final java.lang.String value = \"NEW_\\\"_VAL\";\n    myEnvVars.put(name, value);\n    exec.execute(new org.apache.commons.exec.CommandLine(environmentSript), myEnvVars);\n    final java.lang.String environment = baos.toString().trim();\n    org.junit.Assert.assertTrue(((\"Expecting \" + name) + \" in \") + environment, environment.indexOf(name) >= 0);\n    org.junit.Assert.assertTrue(((\"Expecting \" + value) + \" in \") + environment, environment.indexOf(value) >= 0);\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testAddEnvironmentVariableEmbeddedQuote"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = org.apache.commons.exec.CommandLine.parse(\"AcroRd32.exe\");\n    cmdl.addArgument(\"/p\");\n    cmdl.addArgument(\"/h\");\n    cmdl.addArgument(\"${file}\", false);\n    final java.util.HashMap<java.lang.String, java.lang.String> params = new java.util.HashMap<java.lang.String, java.lang.String>();\n    params.put(\"file\", \"C:\\\\Document And Settings\\\\documents\\\\432432.pdf\");\n    cmdl.setSubstitutionMap(params);\n    final java.lang.String[] result = cmdl.toStrings();\n    org.junit.Assert.assertEquals(\"AcroRd32.exe\", result[0]);\n    org.junit.Assert.assertEquals(\"/p\", result[1]);\n    org.junit.Assert.assertEquals(\"/h\", result[2]);\n    org.junit.Assert.assertEquals(\"C:\\\\Document And Settings\\\\documents\\\\432432.pdf\", result[3]);\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testCommandLineParsingWithExpansion3"
+    },
+    {
+        "Body": "{\n    org.apache.commons.exec.CommandLine cmdl;\n    final java.util.HashMap<java.lang.String, java.lang.Object> substitutionMap = new java.util.HashMap<java.lang.String, java.lang.Object>();\n    substitutionMap.put(\"JAVA_HOME\", \"/usr/local/java\");\n    substitutionMap.put(\"appMainClass\", \"foo.bar.Main\");\n    substitutionMap.put(\"file1\", new java.io.File(\"./pom.xml\"));\n    substitutionMap.put(\"file2\", new java.io.File(\".\\\\temp\\\\READ ME.txt\"));\n    final java.util.HashMap<java.lang.String, java.lang.String> incompleteMap = new java.util.HashMap<java.lang.String, java.lang.String>();\n    incompleteMap.put(\"JAVA_HOME\", \"/usr/local/java\");\n    cmdl = org.apache.commons.exec.CommandLine.parse(\"${JAVA_HOME}/bin/java ${appMainClass}\");\n    org.junit.Assert.assertTrue(cmdl.getExecutable().indexOf(\"${JAVA_HOME}\") == 0);\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"${appMainClass}\" }, cmdl.getArguments());\n    cmdl = org.apache.commons.exec.CommandLine.parse(\"${JAVA_HOME}/bin/java ${appMainClass}\", new java.util.HashMap<java.lang.String, java.lang.Object>());\n    org.junit.Assert.assertTrue(cmdl.getExecutable().indexOf(\"${JAVA_HOME}\") == 0);\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"${appMainClass}\" }, cmdl.getArguments());\n    cmdl = org.apache.commons.exec.CommandLine.parse(\"${JAVA_HOME}/bin/java ${appMainClass}\", substitutionMap);\n    org.junit.Assert.assertTrue(cmdl.getExecutable().indexOf(\"${JAVA_HOME}\") < 0);\n    org.junit.Assert.assertTrue(cmdl.getExecutable().indexOf(\"local\") > 0);\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"foo.bar.Main\" }, cmdl.getArguments());\n    cmdl = org.apache.commons.exec.CommandLine.parse(\"${JAVA_HOME}/bin/java ${appMainClass}\", incompleteMap);\n    org.junit.Assert.assertTrue(cmdl.getExecutable().indexOf(\"${JAVA_HOME}\") < 0);\n    org.junit.Assert.assertTrue(cmdl.getExecutable().indexOf(\"local\") > 0);\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"${appMainClass}\" }, cmdl.getArguments());\n    cmdl = org.apache.commons.exec.CommandLine.parse(\"${JAVA_HOME}/bin/java ${appMainClass} ${file1} ${file2}\", substitutionMap);\n    org.junit.Assert.assertTrue(cmdl.getExecutable().indexOf(\"${file}\") < 0);\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testCommandLineParsingWithExpansion1"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(\"test\");\n    cmdl.addArgument(\"foo\");\n    cmdl.addArgument(\"ba r\");\n    org.junit.Assert.assertEquals(\"[test, foo, \\\"ba r\\\"]\", cmdl.toString());\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"test\", \"foo\", \"\\\"ba r\\\"\" }, cmdl.toStrings());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testAddArgumentWithSpace"
+    },
+    {
+        "Body": "{\n    final java.util.HashMap<java.lang.String, java.lang.String> procEnvironment = new java.util.HashMap<java.lang.String, java.lang.String>();\n    procEnvironment.put(\"JAVA_HOME\", \"/usr/opt/java\");\n    final java.util.Map<java.lang.String, java.lang.String> result = org.apache.commons.exec.util.MapUtils.prefix(procEnvironment, \"env\");\n    org.junit.Assert.assertTrue(procEnvironment.size() == result.size());\n    org.junit.Assert.assertEquals(\"/usr/opt/java\", result.get(\"env.JAVA_HOME\"));\n}",
+        "ClassName": "MapUtilTest",
+        "Label": "test",
+        "MethodName": "testPrefixMap"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(testScript);\n    cl.addArgument(\"BAR\");\n    final int exitValue = exec.execute(cl);\n    org.junit.Assert.assertEquals(\"FOO..BAR\", baos.toString().trim());\n    org.junit.Assert.assertFalse(exec.isFailure(exitValue));\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWithArg"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(printArgsScript);\n    cl.addArgument(\"gdal_translate\");\n    cl.addArgument(\"HDF5:\\\"/home/kk/grass/data/4404.he5\\\"://HDFEOS/GRIDS/OMI_Column_Amount_O3/Data_Fields/ColumnAmountO3/home/kk/4.tif\", false);\n    final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n    final int exitValue = executor.execute(cl);\n    org.junit.Assert.assertFalse(exec.isFailure(exitValue));\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWithComplexArguments"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(foreverTestScript);\n    final org.apache.commons.exec.ExecuteWatchdog watchdog = new org.apache.commons.exec.ExecuteWatchdog(java.lang.Integer.MAX_VALUE);\n    exec.setWatchdog(watchdog);\n    final org.apache.commons.exec.DefaultExecuteResultHandler handler = new org.apache.commons.exec.DefaultExecuteResultHandler();\n    exec.execute(cl, handler);\n    java.lang.Thread.sleep(2000);\n    org.junit.Assert.assertTrue(\"Watchdog should watch the process\", watchdog.isWatching());\n    watchdog.destroyProcess();\n    handler.waitFor(org.apache.commons.exec.DefaultExecutorTest.WAITFOR_TIMEOUT);\n    org.junit.Assert.assertTrue(\"Watchdog should have killed the process\", watchdog.killedProcess());\n    org.junit.Assert.assertFalse(\"Watchdog is no longer watching the process\", watchdog.isWatching());\n    org.junit.Assert.assertTrue(\"ResultHandler received a result\", handler.hasResult());\n    org.junit.Assert.assertNotNull(\"ResultHandler received an exception as result\", handler.getException());\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteAsyncWithTimelyUserTermination"
+    },
+    {
+        "Body": "{\n    org.junit.Assert.assertNull(org.apache.commons.exec.environment.EnvironmentUtils.toStrings(null));\n    final java.util.Map<java.lang.String, java.lang.String> env = new java.util.HashMap<java.lang.String, java.lang.String>();\n    org.junit.Assert.assertArrayEquals(new java.lang.String[0], org.apache.commons.exec.environment.EnvironmentUtils.toStrings(env));\n    env.put(\"foo2\", \"bar2\");\n    env.put(\"foo\", \"bar\");\n    final java.lang.String[] envStrings = org.apache.commons.exec.environment.EnvironmentUtils.toStrings(env);\n    final java.lang.String[] expected = new java.lang.String[]{ \"foo2=bar2\", \"foo=bar\" };\n    java.util.Arrays.sort(expected);\n    java.util.Arrays.sort(envStrings);\n    org.junit.Assert.assertArrayEquals(expected, envStrings);\n}",
+        "ClassName": "EnvironmentUtilsTest",
+        "Label": "test",
+        "MethodName": "testToStrings"
+    },
+    {
+        "Body": "{\n    if (org.apache.commons.exec.OS.isFamilyMac()) {\n        final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n        executor.setStreamHandler(new org.apache.commons.exec.PumpStreamHandler(java.lang.System.out, java.lang.System.err));\n        executor.setWatchdog(new org.apache.commons.exec.ExecuteWatchdog(org.apache.commons.exec.AbstractExecTest.WATCHDOG_TIMEOUT));\n        final org.apache.commons.exec.CommandLine command = new org.apache.commons.exec.CommandLine(resolveTestScript(\"sleep\"));\n        executor.execute(command);\n    } else {\n        throw new org.apache.commons.exec.ExecuteException(testNotSupportedForCurrentOperatingSystem(), 0);\n    }\n}",
+        "ClassName": "Exec65Test",
+        "Label": "test",
+        "MethodName": "testExec65WithSleepUsingShellScript"
+    },
+    {
+        "Body": "{\n    final java.util.Map<java.lang.String, java.lang.String> procEnvironment = org.apache.commons.exec.environment.EnvironmentUtils.getProcEnvironment();\n    org.junit.Assert.assertTrue(\"Expecting non-zero environment size\", procEnvironment.size() > 0);\n    final java.lang.String[] envArgs = org.apache.commons.exec.environment.EnvironmentUtils.toStrings(procEnvironment);\n    for (int i = 0; i < envArgs.length; i++) {\n        org.junit.Assert.assertNotNull((\"Entry \" + i) + \" should not be null\", envArgs[i]);\n        org.junit.Assert.assertTrue((\"Entry \" + i) + \" should not be empty\", envArgs[i].length() > 0);\n    }\n}",
+        "ClassName": "EnvironmentUtilsTest",
+        "Label": "test",
+        "MethodName": "testGetProcEnvironment"
+    },
+    {
+        "Body": "{\n    final java.util.Map<java.lang.String, java.lang.String> vars = new java.util.HashMap<java.lang.String, java.lang.String>();\n    vars.put(\"foo\", \"FOO\");\n    vars.put(\"bar\", \"BAR\");\n    org.junit.Assert.assertEquals(\"This is a FOO & BAR test\", org.apache.commons.exec.util.StringUtils.stringSubstitution(\"This is a ${foo} & ${bar} test\", vars, true).toString());\n    org.junit.Assert.assertEquals(\"This is a FOO & BAR test\", org.apache.commons.exec.util.StringUtils.stringSubstitution(\"This is a ${foo} & ${bar} test\", vars, false).toString());\n}",
+        "ClassName": "StringUtilTest",
+        "Label": "test",
+        "MethodName": "testDefaultStringSubstitution"
+    },
+    {
+        "Body": "{\n    final java.util.Map<java.lang.String, java.lang.String> env = new java.util.HashMap<java.lang.String, java.lang.String>();\n    env.put(\"key\", null);\n    final java.lang.String[] strings = org.apache.commons.exec.environment.EnvironmentUtils.toStrings(env);\n    org.junit.Assert.assertEquals(1, strings.length);\n    org.junit.Assert.assertEquals(\"key=\", strings[0]);\n}",
+        "ClassName": "EnvironmentUtilsTest",
+        "Label": "test",
+        "MethodName": "testToStringWithNullValue"
+    },
+    {
+        "Body": "{\n    java.lang.System.out.println(\"testToStringTroubleshooting\");\n    final org.apache.commons.exec.CommandLine cmd1 = new org.apache.commons.exec.CommandLine(\"sh\").addArgument(\"-c\").addArgument(\"echo 1\", false);\n    final org.apache.commons.exec.CommandLine cmd2 = new org.apache.commons.exec.CommandLine(\"sh\").addArgument(\"-c\").addArgument(\"echo\").addArgument(\"1\");\n    java.lang.System.out.println(\"cmd1: \" + cmd1.toString());\n    java.lang.System.out.println(\"cmd2: \" + cmd2.toString());\n    org.junit.Assert.assertTrue(\"toString() is useful for troubleshooting\", !cmd1.toString().equals(cmd2.toString()));\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testToStringTroubleshooting"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(nonExistingTestScript);\n    final org.apache.commons.exec.DefaultExecuteResultHandler resultHandler = new org.apache.commons.exec.DefaultExecuteResultHandler();\n    final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n    executor.execute(cl, resultHandler);\n    resultHandler.waitFor();\n    org.junit.Assert.assertTrue(executor.isFailure(resultHandler.getExitValue()));\n    org.junit.Assert.assertNotNull(resultHandler.getException());\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteAsyncNonExistingApplication"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(\"runMemorySud.cmd\");\n    cmdl.addArguments(\"10 30 -XX:+UseParallelGC \\'\\\"-XX:ParallelGCThreads=2\\\"\\'\", false);\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"runMemorySud.cmd\", \"10\", \"30\", \"-XX:+UseParallelGC\", \"\\\"-XX:ParallelGCThreads=2\\\"\" }, cmdl.toStrings());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testComplexAddArguments2"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine userAddCL1 = new org.apache.commons.exec.CommandLine(\"useradd\");\n    userAddCL1.addArgument(\"-g\");\n    userAddCL1.addArgument(\"tomcat\");\n    userAddCL1.addArgument(\"foo\");\n    final org.apache.commons.exec.CommandLine userAddCL2 = new org.apache.commons.exec.CommandLine(\"useradd\");\n    userAddCL2.addArgument(\"-g\").addArgument(\"tomcat\");\n    userAddCL2.addArgument(\"foo\");\n    org.junit.Assert.assertEquals(userAddCL1.toString(), userAddCL2.toString());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testAddTwoArguments"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdLine = new org.apache.commons.exec.CommandLine(\"sh\").addArgument(\"-c\").addArgument(\"./src/test/scripts/issues/exec-57-nohup.sh\", false);\n    final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n    final org.apache.commons.exec.PumpStreamHandler pumpStreamHandler = new org.apache.commons.exec.PumpStreamHandler(java.lang.System.out, java.lang.System.err);\n    executor.setStreamHandler(pumpStreamHandler);\n    executor.execute(cmdLine);\n}",
+        "ClassName": "Exec57Test",
+        "Label": "test",
+        "MethodName": "testExecutionOfBackgroundProcess"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(testScript);\n    final int exitValue = exec.execute(cl);\n    org.junit.Assert.assertEquals(\"FOO..\", baos.toString().trim());\n    org.junit.Assert.assertFalse(exec.isFailure(exitValue));\n    org.junit.Assert.assertEquals(new java.io.File(\".\"), exec.getWorkingDirectory());\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecute"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(\"test\");\n    cmdl.addArguments(((java.lang.String[]) (null)));\n    org.junit.Assert.assertEquals(\"[test]\", cmdl.toString());\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"test\" }, cmdl.toStrings());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testAddArgumentsArrayNull"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(testScript);\n    final org.apache.commons.exec.DefaultExecuteResultHandler resultHandler = new org.apache.commons.exec.DefaultExecuteResultHandler();\n    exec.execute(cl, resultHandler);\n    resultHandler.waitFor(2000);\n    org.junit.Assert.assertTrue(resultHandler.hasResult());\n    org.junit.Assert.assertNull(resultHandler.getException());\n    org.junit.Assert.assertFalse(exec.isFailure(resultHandler.getExitValue()));\n    org.junit.Assert.assertEquals(\"FOO..\", baos.toString().trim());\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteAsync"
+    },
+    {
+        "Body": "{\n    try {\n        org.apache.commons.exec.CommandLine.parse(\"  \");\n        org.junit.Assert.fail(\"IllegalArgumentException must be thrown due to incorrect command line\");\n    } catch (final java.lang.IllegalArgumentException e) {\n    }\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testParseCommandLineWithOnlyWhitespace"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(\"runMemorySud.cmd\");\n    cmdl.addArgument(\"10\", false);\n    cmdl.addArgument(\"30\", false);\n    cmdl.addArgument(\"-XX:+UseParallelGC\", false);\n    cmdl.addArgument(\"\\\"-XX:ParallelGCThreads=2\\\"\", false);\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"runMemorySud.cmd\", \"10\", \"30\", \"-XX:+UseParallelGC\", \"\\\"-XX:ParallelGCThreads=2\\\"\" }, cmdl.toStrings());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testComplexAddArgument"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(errorTestScript);\n    try {\n        exec.execute(cl);\n        org.junit.Assert.fail(\"Must throw ExecuteException\");\n    } catch (final org.apache.commons.exec.ExecuteException e) {\n        org.junit.Assert.assertTrue(exec.isFailure(e.getExitValue()));\n    }\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWithError"
+    },
+    {
+        "Body": "{\n    final java.util.Map<java.lang.String, java.lang.String> map = new java.util.HashMap<java.lang.String, java.lang.String>();\n    map.put(\"bar\", \"bar\");\n    final org.apache.commons.exec.CommandLine other = new org.apache.commons.exec.CommandLine(\"test\");\n    other.addArgument(\"foo\");\n    other.setSubstitutionMap(map);\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(other);\n    org.junit.Assert.assertEquals(other.getExecutable(), cmdl.getExecutable());\n    org.junit.Assert.assertArrayEquals(other.getArguments(), cmdl.getArguments());\n    org.junit.Assert.assertEquals(other.isFile(), cmdl.isFile());\n    org.junit.Assert.assertEquals(other.getSubstitutionMap(), cmdl.getSubstitutionMap());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testCopyConstructor"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(\"runMemorySud.cmd\");\n    cmdl.addArguments(new java.lang.String[]{ \"10\", \"30\", \"-XX:+UseParallelGC\", \"\\\"-XX:ParallelGCThreads=2\\\"\" }, false);\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"runMemorySud.cmd\", \"10\", \"30\", \"-XX:+UseParallelGC\", \"\\\"-XX:ParallelGCThreads=2\\\"\" }, cmdl.toStrings());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testComplexAddArguments1"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(foreverTestScript);\n    final org.apache.commons.exec.DefaultExecuteResultHandler handler = new org.apache.commons.exec.DefaultExecuteResultHandler();\n    final org.apache.commons.exec.ShutdownHookProcessDestroyer processDestroyer = new org.apache.commons.exec.ShutdownHookProcessDestroyer();\n    final org.apache.commons.exec.ExecuteWatchdog watchdog = new org.apache.commons.exec.ExecuteWatchdog(java.lang.Integer.MAX_VALUE);\n    org.junit.Assert.assertTrue(exec.getProcessDestroyer() == null);\n    org.junit.Assert.assertTrue(processDestroyer.size() == 0);\n    org.junit.Assert.assertTrue(processDestroyer.isAddedAsShutdownHook() == false);\n    exec.setWatchdog(watchdog);\n    exec.setProcessDestroyer(processDestroyer);\n    exec.execute(cl, handler);\n    java.lang.Thread.sleep(2000);\n    org.junit.Assert.assertNotNull(\"Process destroyer should exist\", exec.getProcessDestroyer());\n    org.junit.Assert.assertEquals(\"Process destroyer size should be 1\", 1, processDestroyer.size());\n    org.junit.Assert.assertTrue(\"Process destroyer should exist as shutdown hook\", processDestroyer.isAddedAsShutdownHook());\n    watchdog.destroyProcess();\n    org.junit.Assert.assertTrue(watchdog.killedProcess());\n    handler.waitFor(org.apache.commons.exec.DefaultExecutorTest.WAITFOR_TIMEOUT);\n    org.junit.Assert.assertTrue(\"ResultHandler received a result\", handler.hasResult());\n    org.junit.Assert.assertNotNull(handler.getException());\n    org.junit.Assert.assertEquals(\"Processor Destroyer size should be 0\", 0, processDestroyer.size());\n    org.junit.Assert.assertFalse(\"Process destroyer should not exist as shutdown hook\", processDestroyer.isAddedAsShutdownHook());\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteAsyncWithProcessDestroyer"
+    },
+    {
+        "Body": "{\n    for (int i = 0; i < 100; i++) {\n        final java.util.Map<java.lang.String, java.lang.String> env = new java.util.HashMap<java.lang.String, java.lang.String>();\n        env.put(\"TEST_ENV_VAR\", java.lang.Integer.toString(i));\n        final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(testScript);\n        final int exitValue = exec.execute(cl, env);\n        org.junit.Assert.assertFalse(exec.isFailure(exitValue));\n        org.junit.Assert.assertEquals((\"FOO.\" + i) + \".\", baos.toString().trim());\n        baos.reset();\n    }\n    for (int i = 0; i < 100; i++) {\n        final java.util.Map<java.lang.String, java.lang.String> env = new java.util.HashMap<java.lang.String, java.lang.String>();\n        env.put(\"TEST_ENV_VAR\", java.lang.Integer.toString(i));\n        final org.apache.commons.exec.DefaultExecuteResultHandler resultHandler = new org.apache.commons.exec.DefaultExecuteResultHandler();\n        final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(foreverTestScript);\n        final org.apache.commons.exec.ExecuteWatchdog watchdog = new org.apache.commons.exec.ExecuteWatchdog(500);\n        exec.setWatchdog(watchdog);\n        exec.execute(cl, env, resultHandler);\n        resultHandler.waitFor(org.apache.commons.exec.DefaultExecutorTest.WAITFOR_TIMEOUT);\n        org.junit.Assert.assertTrue(\"ResultHandler received a result\", resultHandler.hasResult());\n        org.junit.Assert.assertNotNull(resultHandler.getException());\n        baos.reset();\n    }\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "_testExecuteStability"
+    },
+    {
+        "Body": "{\n    final java.util.Map<java.lang.String, java.lang.String> myEnvVars = new java.util.HashMap<java.lang.String, java.lang.String>();\n    myEnvVars.putAll(org.apache.commons.exec.environment.EnvironmentUtils.getProcEnvironment());\n    myEnvVars.put(\"NEW_VAR\", \"NEW_VAL\");\n    exec.execute(new org.apache.commons.exec.CommandLine(environmentSript), myEnvVars);\n    final java.lang.String environment = baos.toString().trim();\n    org.junit.Assert.assertTrue(\"Expecting NEW_VAR in \" + environment, environment.indexOf(\"NEW_VAR\") >= 0);\n    org.junit.Assert.assertTrue(\"Expecting NEW_VAL in \" + environment, environment.indexOf(\"NEW_VAL\") >= 0);\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testAddEnvironmentVariables"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = org.apache.commons.exec.CommandLine.parse(\"test \\\"foo\\\" \\'ba r\\'\");\n    org.junit.Assert.assertEquals(\"[test, foo, \\\"ba r\\\"]\", cmdl.toString());\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"test\", \"foo\", \"\\\"ba r\\\"\" }, cmdl.toStrings());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testParseCommandLineWithQuotes"
+    },
+    {
+        "Body": "{\n    final java.lang.String commandline = \"cmd.exe /C \\\"c:\\\\was51\\\\Web Sphere\\\\AppServer\\\\bin\\\\versionInfo.bat\\\"\";\n    final org.apache.commons.exec.CommandLine cmdl = org.apache.commons.exec.CommandLine.parse(commandline);\n    final java.lang.String[] args = cmdl.getArguments();\n    org.junit.Assert.assertEquals(\"/C\", args[0]);\n    org.junit.Assert.assertEquals(\"\\\"c:\\\\was51\\\\Web Sphere\\\\AppServer\\\\bin\\\\versionInfo.bat\\\"\", args[1]);\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testParseRealLifeCommandLine_1"
+    },
+    {
+        "Body": "{\n    if (org.apache.commons.exec.OS.isFamilyUnix()) {\n        final org.apache.commons.exec.CommandLine cl = org.apache.commons.exec.CommandLine.parse(\"/bin/ls\");\n        cl.addArgument(\"/opt\");\n        final java.io.PipedOutputStream pipedOutputStream = new java.io.PipedOutputStream();\n        final org.apache.commons.exec.PumpStreamHandler psh = new org.apache.commons.exec.PumpStreamHandler(pipedOutputStream, new java.io.ByteArrayOutputStream());\n        exec.setStreamHandler(psh);\n        java.lang.System.out.println(\"Preparing to execute process - commandLine=\" + cl.toString());\n        final org.apache.commons.exec.DefaultExecuteResultHandler handler = new org.apache.commons.exec.DefaultExecuteResultHandler();\n        exec.execute(cl, handler);\n        java.lang.System.out.println(\"Process spun off successfully - process=\" + cl.getExecutable());\n        int x;\n        final java.io.PipedInputStream pis = new java.io.PipedInputStream(pipedOutputStream);\n        while ((x = pis.read()) >= 0) {\n        } \n        pis.close();\n        handler.waitFor(10000);\n        handler.getExitValue();\n    }\n}",
+        "ClassName": "Exec49Test",
+        "Label": "test",
+        "MethodName": "testExec49_2"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(\"test\");\n    cmdl.addArgument(\"foo\");\n    cmdl.addArgument(\"ba\\\"r\");\n    org.junit.Assert.assertEquals(\"[test, foo, \\'ba\\\"r\\']\", cmdl.toString());\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"test\", \"foo\", \"\\'ba\\\"r\\'\" }, cmdl.toStrings());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testAddArgumentWithQuote"
+    },
+    {
+        "Body": "{\n    final java.util.Map<java.lang.String, java.lang.String> vars = new java.util.HashMap<java.lang.String, java.lang.String>();\n    vars.put(\"foo\", \"FOO\");\n    org.junit.Assert.assertEquals(\"This is a FOO & ${bar} test\", org.apache.commons.exec.util.StringUtils.stringSubstitution(\"This is a ${foo} & ${bar} test\", vars, true).toString());\n    try {\n        org.apache.commons.exec.util.StringUtils.stringSubstitution(\"This is a ${foo} & ${bar} test\", vars, false).toString();\n        org.junit.Assert.fail();\n    } catch (final java.lang.RuntimeException e) {\n    }\n}",
+        "ClassName": "StringUtilTest",
+        "Label": "test",
+        "MethodName": "testIncompleteSubstitution"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(testScript);\n    final org.apache.commons.exec.PumpStreamHandler pumpStreamHandler = new org.apache.commons.exec.PumpStreamHandler(java.lang.System.out, java.lang.System.err);\n    final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n    executor.setStreamHandler(pumpStreamHandler);\n    final int exitValue = executor.execute(cl);\n    org.junit.Assert.assertFalse(exec.isFailure(exitValue));\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWithStdOutErr"
+    },
+    {
+        "Body": "{\n    if (!org.apache.commons.exec.OS.isFamilyUnix()) {\n        testNotSupportedForCurrentOperatingSystem();\n        return;\n    }\n    final org.apache.commons.exec.CommandLine cmdLine = new org.apache.commons.exec.CommandLine(\"sh\").addArgument(\"-c\").addArgument(\"./src/test/scripts/issues/exec-57-detached.sh\", false);\n    final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n    final org.apache.commons.exec.PumpStreamHandler pumpStreamHandler = new org.apache.commons.exec.PumpStreamHandler(java.lang.System.out, java.lang.System.err);\n    executor.setStreamHandler(pumpStreamHandler);\n    executor.execute(cmdLine);\n}",
+        "ClassName": "Exec57Test",
+        "Label": "test",
+        "MethodName": "testExecutionOfDetachedProcess"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(foreverTestScript);\n    final org.apache.commons.exec.DefaultExecuteResultHandler resultHandler = new org.apache.commons.exec.DefaultExecuteResultHandler();\n    final org.apache.commons.exec.ExecuteWatchdog watchdog = new org.apache.commons.exec.ExecuteWatchdog(org.apache.commons.exec.ExecuteWatchdog.INFINITE_TIMEOUT);\n    exec.setWatchdog(watchdog);\n    exec.execute(cl, resultHandler);\n    java.lang.Thread.sleep(5000);\n    org.junit.Assert.assertTrue(\"The watchdog is watching the process\", watchdog.isWatching());\n    watchdog.destroyProcess();\n    org.junit.Assert.assertTrue(\"The watchdog has killed the process\", watchdog.killedProcess());\n    org.junit.Assert.assertFalse(\"The watchdog is no longer watching any process\", watchdog.isWatching());\n}",
+        "ClassName": "Exec44Test",
+        "Label": "test",
+        "MethodName": "testExec44"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(\"test\");\n    cmdl.addArguments(\"\\'fo o\\' \\\"ba r\\\"\");\n    org.junit.Assert.assertEquals(\"[test, \\\"fo o\\\", \\\"ba r\\\"]\", cmdl.toString());\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"test\", \"\\\"fo o\\\"\", \"\\\"ba r\\\"\" }, cmdl.toStrings());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testAddArgumentsWithQuotesAndSpaces"
+    },
+    {
+        "Body": "{\n    final long printJobTimeout = 15000;\n    final boolean printInBackground = false;\n    final java.io.File pdfFile = new java.io.File(\"/Documents and Settings/foo.pdf\");\n    org.apache.commons.exec.TutorialTest.PrintResultHandler printResult;\n    try {\n        java.lang.System.out.println(\"[main] Preparing print job ...\");\n        printResult = print(pdfFile, printJobTimeout, printInBackground);\n        java.lang.System.out.println(\"[main] Successfully sent the print job ...\");\n    } catch (final java.lang.Exception e) {\n        e.printStackTrace();\n        org.junit.Assert.fail(\"[main] Printing of the following document failed : \" + pdfFile.getAbsolutePath());\n        throw e;\n    }\n    java.lang.System.out.println(\"[main] Test is exiting but waiting for the print job to finish...\");\n    printResult.waitFor();\n    java.lang.System.out.println(\"[main] The print job has finished ...\");\n}",
+        "ClassName": "TutorialTest",
+        "Label": "test",
+        "MethodName": "testTutorialExample"
+    },
+    {
+        "Body": "{\n    if (org.apache.commons.exec.OS.isFamilyUnix()) {\n        final org.apache.commons.exec.CommandLine cl = org.apache.commons.exec.CommandLine.parse(\"/bin/ls\");\n        cl.addArgument(\"/opt\");\n        final java.io.PipedOutputStream pipedOutputStream = new java.io.PipedOutputStream();\n        final org.apache.commons.exec.PumpStreamHandler psh = new org.apache.commons.exec.PumpStreamHandler(pipedOutputStream);\n        exec.setStreamHandler(psh);\n        java.lang.System.out.println(\"Preparing to execute process - commandLine=\" + cl.toString());\n        final org.apache.commons.exec.DefaultExecuteResultHandler handler = new org.apache.commons.exec.DefaultExecuteResultHandler();\n        exec.execute(cl, handler);\n        java.lang.System.out.println(\"Process spun off successfully - process=\" + cl.getExecutable());\n        int x;\n        final java.io.PipedInputStream pis = new java.io.PipedInputStream(pipedOutputStream);\n        while ((x = pis.read()) >= 0) {\n        } \n        pis.close();\n        handler.waitFor(10000);\n        handler.getExitValue();\n    }\n}",
+        "ClassName": "Exec49Test",
+        "Label": "test",
+        "MethodName": "testExec49_1"
+    },
+    {
+        "Body": "{\n    final int start = 0;\n    final int seconds = 1;\n    final int offsetMultiplier = 1;\n    final int maxRetries = 180;\n    int processTerminatedCounter = 0;\n    int watchdogKilledProcessCounter = 0;\n    final org.apache.commons.exec.CommandLine cmdLine = new org.apache.commons.exec.CommandLine(pingScript);\n    cmdLine.addArgument(java.lang.Integer.toString(seconds + 1));\n    final long startTime = java.lang.System.currentTimeMillis();\n    for (int offset = start; offset <= maxRetries; offset++) {\n        final org.apache.commons.exec.ExecuteWatchdog watchdog = new org.apache.commons.exec.ExecuteWatchdog((seconds * 1000) + (offset * offsetMultiplier));\n        exec.setWatchdog(watchdog);\n        try {\n            exec.execute(cmdLine);\n            processTerminatedCounter++;\n            if (processTerminatedCounter > 5) {\n                break;\n            }\n        } catch (final org.apache.commons.exec.ExecuteException ex) {\n            org.junit.Assert.assertTrue(\"Watchdog killed the process\", watchdog.killedProcess());\n            watchdogKilledProcessCounter++;\n        }\n    }\n    final long avg = (java.lang.System.currentTimeMillis() - startTime) / (watchdogKilledProcessCounter + processTerminatedCounter);\n    java.lang.System.out.println(((((((((\"Processes terminated: \" + processTerminatedCounter) + \" killed: \") + watchdogKilledProcessCounter) + \" Multiplier: \") + offsetMultiplier) + \" MaxRetries: \") + maxRetries) + \" Elapsed (avg ms): \") + avg);\n    org.junit.Assert.assertTrue(\"Not a single process terminated on its own\", processTerminatedCounter > 0);\n    org.junit.Assert.assertTrue(\"Not a single process was killed by the watch dog\", watchdogKilledProcessCounter > 0);\n}",
+        "ClassName": "Exec60Test",
+        "Label": "test",
+        "MethodName": "testExec_60"
+    },
+    {
+        "Body": "{\n    final java.util.Map<java.lang.String, java.lang.String> vars = new java.util.HashMap<java.lang.String, java.lang.String>();\n    vars.put(\"foo\", \"FOO\");\n    org.junit.Assert.assertEquals(\"This is a FOO & ${}} test\", org.apache.commons.exec.util.StringUtils.stringSubstitution(\"This is a ${foo} & ${}} test\", vars, true).toString());\n}",
+        "ClassName": "StringUtilTest",
+        "Label": "test",
+        "MethodName": "testErroneousTemplate"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(nonExistingTestScript);\n    final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n    executor.execute(cl);\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteNonExistingApplication"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdLine = new org.apache.commons.exec.CommandLine(pingScript);\n    cmdLine.addArgument(\"10\");\n    final org.apache.commons.exec.ExecuteWatchdog watchdog = new org.apache.commons.exec.ExecuteWatchdog(java.lang.Integer.MAX_VALUE);\n    final org.apache.commons.exec.DefaultExecuteResultHandler handler = new org.apache.commons.exec.DefaultExecuteResultHandler();\n    exec.setWatchdog(watchdog);\n    exec.execute(cmdLine, handler);\n    org.junit.Assert.assertTrue(watchdog.isWatching());\n    watchdog.destroyProcess();\n    org.junit.Assert.assertTrue(\"Watchdog should have killed the process\", watchdog.killedProcess());\n    org.junit.Assert.assertFalse(\"Watchdog is no longer watching the process\", watchdog.isWatching());\n}",
+        "ClassName": "Exec34Test",
+        "Label": "test",
+        "MethodName": "testExec34_1"
+    },
+    {
+        "Body": "{\n    final java.io.File workingDir = new java.io.File(\"/foo/bar\");\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(testScript);\n    exec.setWorkingDirectory(workingDir);\n    exec.execute(cl);\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWithInvalidWorkingDirectory"
+    },
+    {
+        "Body": "{\n    org.apache.commons.exec.CommandLine cmdl;\n    final java.util.HashMap<java.lang.String, java.lang.String> params = new java.util.HashMap<java.lang.String, java.lang.String>();\n    cmdl = org.apache.commons.exec.CommandLine.parse(\"AcroRd32.exe\", params);\n    org.junit.Assert.assertEquals(\"[AcroRd32.exe]\", cmdl.toString());\n    params.put(\"file\", \"C:\\\\Document And Settings\\\\documents\\\\432432.pdf\");\n    cmdl = org.apache.commons.exec.CommandLine.parse(\"AcroRd32.exe /p /h '${file}'\", params);\n    org.junit.Assert.assertEquals(\"[AcroRd32.exe, /p, /h, \\\"C:\\\\Document And Settings\\\\documents\\\\432432.pdf\\\"]\", cmdl.toString());\n    params.put(\"file\", \"C:\\\\documents\\\\432432.pdf\");\n    cmdl = org.apache.commons.exec.CommandLine.parse(\"AcroRd32.exe /p /h '${file}'\", params);\n    org.junit.Assert.assertEquals(\"[AcroRd32.exe, /p, /h, C:\\\\documents\\\\432432.pdf]\", cmdl.toString());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testToString"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(\"test\");\n    org.junit.Assert.assertEquals(\"[test]\", cmdl.toString());\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"test\" }, cmdl.toStrings());\n    org.junit.Assert.assertEquals(\"test\", cmdl.getExecutable());\n    org.junit.Assert.assertTrue(cmdl.getArguments().length == 0);\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testExecutable"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(\"test\");\n    try {\n        cmdl.addArgument(\"b\\\"a\\'r\");\n        org.junit.Assert.fail(\"IllegalArgumentException should be thrown\");\n    } catch (final java.lang.IllegalArgumentException e) {\n    }\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testAddArgumentWithBothQuotes"
+    },
+    {
+        "Body": "{\n    final long timeout = java.lang.Long.MAX_VALUE;\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(testScript);\n    final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n    executor.setWorkingDirectory(new java.io.File(\".\"));\n    final org.apache.commons.exec.ExecuteWatchdog watchdog = new org.apache.commons.exec.ExecuteWatchdog(timeout);\n    executor.setWatchdog(watchdog);\n    try {\n        executor.execute(cl);\n    } catch (final org.apache.commons.exec.ExecuteException e) {\n        org.junit.Assert.assertFalse(\"Process should exit normally, not be killed by watchdog\", watchdog.killedProcess());\n        throw e;\n    }\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWatchdogVeryLongTimeout"
+    },
+    {
+        "Body": "{\n    final java.io.File outfile = java.io.File.createTempFile(\"EXEC\", \".test\");\n    outfile.deleteOnExit();\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(testScript);\n    final java.io.FileOutputStream outAndErr = new java.io.FileOutputStream(outfile);\n    try {\n        final org.apache.commons.exec.PumpStreamHandler pumpStreamHandler = new org.apache.commons.exec.PumpStreamHandler(outAndErr);\n        final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n        executor.setStreamHandler(pumpStreamHandler);\n        final int exitValue = executor.execute(cl);\n        org.junit.Assert.assertFalse(exec.isFailure(exitValue));\n        org.junit.Assert.assertTrue(outfile.exists());\n    } finally {\n        outAndErr.close();\n    }\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWithRedirectOutErr"
+    },
+    {
+        "Body": "{\n    final java.lang.String commandline = \"C:\\\\CVS_DB\\\\WeightsEngine /f WeightsEngine.mak CFG=\\\"WeightsEngine - Win32Release\\\"\";\n    final org.apache.commons.exec.CommandLine cmdl = org.apache.commons.exec.CommandLine.parse(commandline);\n    final java.lang.String[] args = cmdl.getArguments();\n    org.junit.Assert.assertEquals(\"/f\", args[0]);\n    org.junit.Assert.assertEquals(\"WeightsEngine.mak\", args[1]);\n    org.junit.Assert.assertEquals(\"CFG=\\\"WeightsEngine - Win32Release\\\"\", args[2]);\n}",
+        "ClassName": "Exec36Test",
+        "Label": "test",
+        "MethodName": "_testExec36_6"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdl = new org.apache.commons.exec.CommandLine(\"test\");\n    cmdl.addArguments(new java.lang.String[]{ \"foo\", \"bar\" });\n    org.junit.Assert.assertEquals(\"[test, foo, bar]\", cmdl.toString());\n    org.junit.Assert.assertArrayEquals(new java.lang.String[]{ \"test\", \"foo\", \"bar\" }, cmdl.toStrings());\n}",
+        "ClassName": "CommandLineTest",
+        "Label": "test",
+        "MethodName": "testAddArgumentsArray"
+    },
+    {
+        "Body": "{\n    final java.util.Map<java.lang.String, java.lang.String> procEnvironment = org.apache.commons.exec.environment.EnvironmentUtils.getProcEnvironment();\n    final java.util.HashMap<java.lang.String, java.lang.String> applicationEnvironment = new java.util.HashMap<java.lang.String, java.lang.String>();\n    applicationEnvironment.put(\"appMainClass\", \"foo.bar.Main\");\n    final java.util.Map<java.lang.String, java.lang.String> result = org.apache.commons.exec.util.MapUtils.merge(procEnvironment, applicationEnvironment);\n    org.junit.Assert.assertTrue((procEnvironment.size() + applicationEnvironment.size()) == result.size());\n    org.junit.Assert.assertEquals(\"foo.bar.Main\", result.get(\"appMainClass\"));\n}",
+        "ClassName": "MapUtilTest",
+        "Label": "test",
+        "MethodName": "testMergeMap"
+    },
+    {
+        "Body": "{\n    java.lang.Process process = java.lang.Runtime.getRuntime().exec(resolveTestScript(\"sleep\").getAbsolutePath());\n    java.lang.Thread.sleep(org.apache.commons.exec.AbstractExecTest.WATCHDOG_TIMEOUT);\n    process.destroy();\n    process.waitFor();\n    org.junit.Assert.assertTrue(process.exitValue() != 0);\n}",
+        "ClassName": "Exec65Test",
+        "Label": "test",
+        "MethodName": "testExec65WithSleepUsingShellScriptAndJDKOnly"
+    },
+    {
+        "Body": "{\n    final java.util.Map<java.lang.String, java.lang.String> env = new java.util.HashMap<java.lang.String, java.lang.String>();\n    env.put(\"TEST_ENV_VAR\", \"XYZ\");\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(testScript);\n    final int exitValue = exec.execute(cl, env);\n    org.junit.Assert.assertEquals(\"FOO.XYZ.\", baos.toString().trim());\n    org.junit.Assert.assertFalse(exec.isFailure(exitValue));\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteWithSingleEnvironmentVariable"
+    },
+    {
+        "Body": "{\n    final java.io.ByteArrayInputStream bais = new java.io.ByteArrayInputStream(\"Foo\".getBytes());\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(this.stdinSript);\n    final org.apache.commons.exec.PumpStreamHandler pumpStreamHandler = new org.apache.commons.exec.PumpStreamHandler(this.baos, java.lang.System.err, bais);\n    final org.apache.commons.exec.DefaultExecuteResultHandler resultHandler = new org.apache.commons.exec.DefaultExecuteResultHandler();\n    final org.apache.commons.exec.Executor executor = new org.apache.commons.exec.DefaultExecutor();\n    executor.setStreamHandler(pumpStreamHandler);\n    executor.execute(cl, resultHandler);\n    resultHandler.waitFor(org.apache.commons.exec.DefaultExecutorTest.WAITFOR_TIMEOUT);\n    org.junit.Assert.assertTrue(\"ResultHandler received a result\", resultHandler.hasResult());\n    org.junit.Assert.assertFalse(exec.isFailure(resultHandler.getExitValue()));\n    final java.lang.String result = baos.toString();\n    org.junit.Assert.assertTrue((\"Result '\" + result) + \"' should contain 'Hello Foo!'\", result.indexOf(\"Hello Foo!\") >= 0);\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testStdInHandling"
+    },
+    {
+        "Body": "{\n    org.apache.commons.exec.CommandLine cmdl;\n    final java.lang.String line = \"./script/jrake \" + ((((\"cruise:publish_installers \" + \"INSTALLER_VERSION=unstable_2_1 \") + \"INSTALLER_PATH=\\\"/var/lib/cruise-agent/installers\\\" \") + \"INSTALLER_DOWNLOAD_SERVER='something'\") + \"WITHOUT_HELP_DOC=true\");\n    cmdl = org.apache.commons.exec.CommandLine.parse(line);\n    final java.lang.String[] args = cmdl.toStrings();\n    org.junit.Assert.assertEquals(\"./script/jrake\", args[0]);\n    org.junit.Assert.assertEquals(\"cruise:publish_installers\", args[1]);\n    org.junit.Assert.assertEquals(\"INSTALLER_VERSION=unstable_2_1\", args[2]);\n    org.junit.Assert.assertEquals(\"INSTALLER_PATH=\\\"/var/lib/cruise-agent/installers\\\"\", args[3]);\n    org.junit.Assert.assertEquals(\"INSTALLER_DOWNLOAD_SERVER='something'\", args[4]);\n    org.junit.Assert.assertEquals(\"WITHOUT_HELP_DOC=true\", args[5]);\n}",
+        "ClassName": "Exec36Test",
+        "Label": "test",
+        "MethodName": "_testExec36_4"
+    },
+    {
+        "Body": "{\n    if (org.apache.commons.exec.OS.isFamilyUnix()) {\n        execute(\"exec-62\");\n    }\n}",
+        "ClassName": "Exec62Test",
+        "Label": "test",
+        "MethodName": "testMe"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdLine = new org.apache.commons.exec.CommandLine(pingScript);\n    cmdLine.addArgument(\"10\");\n    final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n    final org.apache.commons.exec.ExecuteWatchdog watchdog = new org.apache.commons.exec.ExecuteWatchdog(2 * 1000);\n    final org.apache.commons.exec.PumpStreamHandler pumpStreamHandler = new org.apache.commons.exec.PumpStreamHandler(null, null, null);\n    executor.setWatchdog(watchdog);\n    executor.setStreamHandler(pumpStreamHandler);\n    final long startTime = java.lang.System.currentTimeMillis();\n    try {\n        executor.execute(cmdLine);\n    } catch (final org.apache.commons.exec.ExecuteException e) {\n        java.lang.System.out.println(e);\n    }\n    final long duration = java.lang.System.currentTimeMillis() - startTime;\n    java.lang.System.out.println((\"Process completed in \" + duration) + \" millis; below is its output\");\n    if (watchdog.killedProcess()) {\n        java.lang.System.out.println(\"Process timed out and was killed.\");\n    }\n    org.junit.Assert.assertTrue(\"The process was killed by the watchdog\", watchdog.killedProcess());\n    org.junit.Assert.assertTrue(\"Skipping the Thread.join() did not work, duration=\" + duration, duration < 9000);\n}",
+        "ClassName": "Exec41Test",
+        "Label": "test",
+        "MethodName": "testExec41WithoutStreams"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cmdLine = new org.apache.commons.exec.CommandLine(pingScript);\n    cmdLine.addArgument(\"10\");\n    final org.apache.commons.exec.ExecuteWatchdog watchdog = new org.apache.commons.exec.ExecuteWatchdog(5000);\n    final org.apache.commons.exec.DefaultExecuteResultHandler handler = new org.apache.commons.exec.DefaultExecuteResultHandler();\n    exec.setWatchdog(watchdog);\n    exec.execute(cmdLine, handler);\n    handler.waitFor();\n    org.junit.Assert.assertTrue(\"Process has exited\", handler.hasResult());\n    org.junit.Assert.assertNotNull(\"Process was aborted\", handler.getException());\n    org.junit.Assert.assertTrue(\"Watchdog should have killed the process\", watchdog.killedProcess());\n    org.junit.Assert.assertFalse(\"Watchdog is no longer watching the process\", watchdog.isWatching());\n}",
+        "ClassName": "Exec34Test",
+        "Label": "test",
+        "MethodName": "testExec34_2"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(nonExistingTestScript);\n    final org.apache.commons.exec.DefaultExecuteResultHandler resultHandler = new org.apache.commons.exec.DefaultExecuteResultHandler() {\n        @java.lang.Override\n        public void onProcessFailed(org.apache.commons.exec.ExecuteException e) {\n            java.lang.System.out.println((\"Process did not stop gracefully, had exception '\" + e.getMessage()) + \"' while executing process\");\n            super.onProcessFailed(e);\n        }\n    };\n    final org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n    executor.setWatchdog(new org.apache.commons.exec.ExecuteWatchdog(org.apache.commons.exec.ExecuteWatchdog.INFINITE_TIMEOUT));\n    executor.execute(cl, resultHandler);\n    resultHandler.waitFor();\n    org.junit.Assert.assertTrue(executor.isFailure(resultHandler.getExitValue()));\n    org.junit.Assert.assertNotNull(resultHandler.getException());\n    org.junit.Assert.assertFalse(executor.getWatchdog().isWatching());\n    org.junit.Assert.assertFalse(executor.getWatchdog().killedProcess());\n    executor.getWatchdog().destroyProcess();\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "test",
+        "MethodName": "testExecuteAsyncNonExistingApplicationWithWatchdog"
+    },
+    {
+        "Body": "{\n    final java.util.Map<java.lang.String, java.lang.String> env = new java.util.HashMap<java.lang.String, java.lang.String>();\n    env.put(null, \"TheNullKey\");\n    final java.lang.String[] strings = org.apache.commons.exec.environment.EnvironmentUtils.toStrings(env);\n    org.junit.Assert.assertEquals(1, strings.length);\n    org.junit.Assert.assertEquals(\"=TheNullKey\", strings[0]);\n}",
+        "ClassName": "EnvironmentUtilsTest",
+        "Label": "test",
+        "MethodName": "testToStringWithNullKey"
+    },
+    {
+        "Body": "{\n    org.apache.commons.exec.CommandLine cmdl;\n    final java.lang.String line = \"dotnetfx.exe\" + (\" /q:a \" + \"/c:\\\"install.exe /l \\\"\\\"c:\\\\Documents and Settings\\\\myusername\\\\Local Settings\\\\Temp\\\\netfx.log\\\"\\\" /q\\\"\");\n    cmdl = org.apache.commons.exec.CommandLine.parse(line);\n    final java.lang.String[] args = cmdl.toStrings();\n    org.junit.Assert.assertEquals(\"dotnetfx.exe\", args[0]);\n    org.junit.Assert.assertEquals(\"/q:a\", args[1]);\n    org.junit.Assert.assertEquals(\"/c:\\\"install.exe /l \\\"\\\"c:\\\\Documents and Settings\\\\myusername\\\\Local Settings\\\\Temp\\\\netfx.log\\\"\\\" /q\\\"\", args[2]);\n}",
+        "ClassName": "Exec36Test",
+        "Label": "test",
+        "MethodName": "_testExec36_5"
+    },
+    {
+        "Body": "{\n    final java.lang.String[] envVars = org.apache.commons.exec.environment.EnvironmentUtils.toStrings(env);\n    return java.lang.Runtime.getRuntime().exec(cmd.toStrings(), envVars, workingDir);\n}",
+        "ClassName": "Java13CommandLauncher",
+        "Label": "method",
+        "MethodName": "exec"
+    },
+    {
+        "Body": "{\n    if (!hasResult) {\n        throw new java.lang.IllegalStateException(\"The process has not exited yet therefore no result is available ...\");\n    }\n    return exitValue;\n}",
+        "ClassName": "DefaultExecuteResultHandler",
+        "Label": "method",
+        "MethodName": "getExitValue"
+    },
+    {
+        "Body": "{\n    return executorThread;\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "getExecutorThread"
+    },
+    {
+        "Body": "{\n    this.exitValue = exitValue;\n    this.exception = null;\n    this.hasResult = true;\n}",
+        "ClassName": "DefaultExecuteResultHandler",
+        "Label": "method",
+        "MethodName": "onProcessComplete"
+    },
+    {
+        "Body": "{\n    if (out != null) {\n        createProcessOutputPump(is, out);\n    }\n}",
+        "ClassName": "PumpStreamHandler",
+        "Label": "method",
+        "MethodName": "setProcessOutputStream"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.OS.isFamily(org.apache.commons.exec.OS.FAMILY_WINDOWS);\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isFamilyWindows"
+    },
+    {
+        "Body": "{\n    return killedProcess;\n}",
+        "ClassName": "ExecuteWatchdog",
+        "Label": "method",
+        "MethodName": "killedProcess"
+    },
+    {
+        "Body": "{\n    return null;\n}",
+        "ClassName": "DefaultProcessingEnvironment",
+        "Label": "method",
+        "MethodName": "runProcEnvCommand"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.OS.isFamily(org.apache.commons.exec.OS.FAMILY_9X);\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isFamilyWin9x"
+    },
+    {
+        "Body": "{\n    if (added && (!running)) {\n        final boolean removed = java.lang.Runtime.getRuntime().removeShutdownHook(destroyProcessThread);\n        if (!removed) {\n            java.lang.System.err.println(\"Could not remove shutdown hook\");\n        }\n        destroyProcessThread.setShouldDestroy(false);\n        destroyProcessThread.start();\n        try {\n            destroyProcessThread.join(20000);\n        } catch (final java.lang.InterruptedException ie) {\n        }\n        destroyProcessThread = null;\n        added = false;\n    }\n}",
+        "ClassName": "ShutdownHookProcessDestroyer",
+        "Label": "method",
+        "MethodName": "removeShutdownHook"
+    },
+    {
+        "Body": "{\n    inputStreamPumper = new org.apache.commons.exec.InputStreamPumper(is, os);\n    final java.lang.Thread result = new java.lang.Thread(inputStreamPumper, \"Exec Input Stream Pumper\");\n    result.setDaemon(true);\n    return result;\n}",
+        "ClassName": "PumpStreamHandler",
+        "Label": "method",
+        "MethodName": "createSystemInPump"
+    },
+    {
+        "Body": "{\n    return (argument.startsWith(org.apache.commons.exec.util.StringUtils.SINGLE_QUOTE) && argument.endsWith(org.apache.commons.exec.util.StringUtils.SINGLE_QUOTE)) || (argument.startsWith(org.apache.commons.exec.util.StringUtils.DOUBLE_QUOTE) && argument.endsWith(org.apache.commons.exec.util.StringUtils.DOUBLE_QUOTE));\n}",
+        "ClassName": "StringUtils",
+        "Label": "method",
+        "MethodName": "isQuoted"
+    },
+    {
+        "Body": "{\n    java.util.Map<K, V> result = null;\n    if ((lhs == null) || (lhs.size() == 0)) {\n        result = org.apache.commons.exec.util.MapUtils.copy(rhs);\n    } else\n        if ((rhs == null) || (rhs.size() == 0)) {\n            result = org.apache.commons.exec.util.MapUtils.copy(lhs);\n        } else {\n            result = org.apache.commons.exec.util.MapUtils.copy(lhs);\n            result.putAll(rhs);\n        }\n\n    return result;\n}",
+        "ClassName": "MapUtils",
+        "Label": "method",
+        "MethodName": "merge"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.OS.isFamily(org.apache.commons.exec.OS.FAMILY_NETWARE);\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isFamilyNetware"
+    },
+    {
+        "Body": "{\n    return new java.lang.Thread(runnable, name);\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "createThread"
+    },
+    {
+        "Body": "{\n    java.lang.String cleanedArgument = argument.trim();\n    while (cleanedArgument.startsWith(org.apache.commons.exec.util.StringUtils.SINGLE_QUOTE) || cleanedArgument.startsWith(org.apache.commons.exec.util.StringUtils.DOUBLE_QUOTE)) {\n        cleanedArgument = cleanedArgument.substring(1);\n    } \n    while (cleanedArgument.endsWith(org.apache.commons.exec.util.StringUtils.SINGLE_QUOTE) || cleanedArgument.endsWith(org.apache.commons.exec.util.StringUtils.DOUBLE_QUOTE)) {\n        cleanedArgument = cleanedArgument.substring(0, cleanedArgument.length() - 1);\n    } \n    final java.lang.StringBuilder buf = new java.lang.StringBuilder();\n    if (cleanedArgument.indexOf(org.apache.commons.exec.util.StringUtils.DOUBLE_QUOTE) > (-1)) {\n        if (cleanedArgument.indexOf(org.apache.commons.exec.util.StringUtils.SINGLE_QUOTE) > (-1)) {\n            throw new java.lang.IllegalArgumentException(\"Can't handle single and double quotes in same argument\");\n        }\n        return buf.append(org.apache.commons.exec.util.StringUtils.SINGLE_QUOTE).append(cleanedArgument).append(org.apache.commons.exec.util.StringUtils.SINGLE_QUOTE).toString();\n    } else\n        if ((cleanedArgument.indexOf(org.apache.commons.exec.util.StringUtils.SINGLE_QUOTE) > (-1)) || (cleanedArgument.indexOf(\" \") > (-1))) {\n            return buf.append(org.apache.commons.exec.util.StringUtils.DOUBLE_QUOTE).append(cleanedArgument).append(org.apache.commons.exec.util.StringUtils.DOUBLE_QUOTE).toString();\n        } else {\n            return cleanedArgument;\n        }\n\n}",
+        "ClassName": "StringUtils",
+        "Label": "method",
+        "MethodName": "quoteArgument"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.util.StringUtils.fixFileSeparatorChar(expandArgument(executable));\n}",
+        "ClassName": "CommandLine",
+        "Label": "method",
+        "MethodName": "getExecutable"
+    },
+    {
+        "Body": "{\n    return isFile;\n}",
+        "ClassName": "CommandLine",
+        "Label": "method",
+        "MethodName": "isFile"
+    },
+    {
+        "Body": "{\n    ensureStarted();\n    this.timeoutOccured(null);\n    this.stop();\n}",
+        "ClassName": "ExecuteWatchdog",
+        "Label": "method",
+        "MethodName": "destroyProcess"
+    },
+    {
+        "Body": "{\n    return arg.replace(org.apache.commons.exec.util.StringUtils.SLASH_CHAR, java.io.File.separatorChar).replace(org.apache.commons.exec.util.StringUtils.BACKSLASH_CHAR, java.io.File.separatorChar);\n}",
+        "ClassName": "StringUtils",
+        "Label": "method",
+        "MethodName": "fixFileSeparatorChar"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.OS.isFamily(org.apache.commons.exec.OS.FAMILY_OS2);\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isFamilyOS2"
+    },
+    {
+        "Body": "{\n    final java.lang.String msg = java.lang.String.format(\"The test '%s' is broken for OS : %s\", name.getMethodName(), org.apache.commons.exec.AbstractExecTest.OS_NAME);\n    java.lang.System.err.println(msg);\n    return msg;\n}",
+        "ClassName": "AbstractExecTest",
+        "Label": "method",
+        "MethodName": "testIsBrokenForCurrentOperatingSystem"
+    },
+    {
+        "Body": "{\n    outputThread = createPump(is, os);\n}",
+        "ClassName": "PumpStreamHandler",
+        "Label": "method",
+        "MethodName": "createProcessOutputPump"
+    },
+    {
+        "Body": "{\n    final java.lang.StringBuffer stringBuffer = org.apache.commons.exec.util.StringUtils.stringSubstitution(argument, this.getSubstitutionMap(), true);\n    return stringBuffer.toString();\n}",
+        "ClassName": "CommandLine",
+        "Label": "method",
+        "MethodName": "expandArgument"
+    },
+    {
+        "Body": "{\n    errorThread = createPump(is, os);\n}",
+        "ClassName": "PumpStreamHandler",
+        "Label": "method",
+        "MethodName": "createProcessErrorPump"
+    },
+    {
+        "Body": "{\n    return hasResult;\n}",
+        "ClassName": "DefaultExecuteResultHandler",
+        "Label": "method",
+        "MethodName": "hasResult"
+    },
+    {
+        "Body": "{\n    return out;\n}",
+        "ClassName": "PumpStreamHandler",
+        "Label": "method",
+        "MethodName": "getOut"
+    },
+    {
+        "Body": "{\n    this.stopTimeout = timeout;\n}",
+        "ClassName": "PumpStreamHandler",
+        "Label": "method",
+        "MethodName": "setStopTimeout"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.OS.isOs(null, null, arch, null);\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isArch"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.OS.isFamily(org.apache.commons.exec.OS.FAMILY_UNIX);\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isFamilyUnix"
+    },
+    {
+        "Body": "{\n    processLine(buffer.toString());\n    buffer.reset();\n}",
+        "ClassName": "LogOutputStream",
+        "Label": "method",
+        "MethodName": "processBuffer"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.OS.isFamily(org.apache.commons.exec.OS.FAMILY_DOS);\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isFamilyDOS"
+    },
+    {
+        "Body": "{\n    int result = 0;\n    for (int i = 0; i < data.length(); i++) {\n        if (data.charAt(i) == c) {\n            result++;\n        }\n    }\n    return result;\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "method",
+        "MethodName": "getOccurrences"
+    },
+    {
+        "Body": "{\n    if (source == null) {\n        return null;\n    }\n    final java.util.Map<java.lang.String, V> result = new java.util.HashMap<java.lang.String, V>();\n    for (final java.util.Map.Entry<K, V> entry : source.entrySet()) {\n        final K key = entry.getKey();\n        final V value = entry.getValue();\n        result.put((prefix + '.') + key.toString(), value);\n    }\n    return result;\n}",
+        "ClassName": "MapUtils",
+        "Label": "method",
+        "MethodName": "prefix"
+    },
+    {
+        "Body": "{\n    java.lang.String text;\n    final java.lang.StringBuilder contents = new java.lang.StringBuilder();\n    final java.io.BufferedReader reader = new java.io.BufferedReader(new java.io.FileReader(file));\n    while ((text = reader.readLine()) != null) {\n        contents.append(text).append(java.lang.System.getProperty(\"line.separator\"));\n    } \n    reader.close();\n    return contents.toString();\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "method",
+        "MethodName": "readFile"
+    },
+    {
+        "Body": "{\n    try {\n        while (!stop) {\n            while ((is.available() > 0) && (!stop)) {\n                os.write(is.read());\n            } \n            os.flush();\n            java.lang.Thread.sleep(org.apache.commons.exec.InputStreamPumper.SLEEPING_TIME);\n        } \n    } catch (final java.lang.Exception e) {\n        final java.lang.String msg = \"Got exception while reading/writing the stream\";\n        org.apache.commons.exec.util.DebugUtils.handleException(msg, e);\n    } finally {\n    }\n}",
+        "ClassName": "InputStreamPumper",
+        "Label": "method",
+        "MethodName": "run"
+    },
+    {
+        "Body": "{\n    if (processToMonitor == null) {\n        throw new java.lang.NullPointerException(\"process is null.\");\n    }\n    if (this.process != null) {\n        throw new java.lang.IllegalStateException(\"Already running.\");\n    }\n    this.caught = null;\n    this.killedProcess = false;\n    this.watch = true;\n    this.process = processToMonitor;\n    this.processStarted = true;\n    this.notifyAll();\n    if (this.hasWatchdog) {\n        watchdog.start();\n    }\n}",
+        "ClassName": "ExecuteWatchdog",
+        "Label": "method",
+        "MethodName": "start"
+    },
+    {
+        "Body": "{\n    final java.io.File result = org.apache.commons.exec.TestUtil.resolveScriptForOS((((testDir + \"/\") + directoryName) + \"/\") + baseName);\n    if (!result.exists()) {\n        throw new java.lang.IllegalArgumentException(\"Unable to find the following file: \" + result.getAbsolutePath());\n    }\n    return result;\n}",
+        "ClassName": "AbstractExecTest",
+        "Label": "method",
+        "MethodName": "resolveTestScript"
+    },
+    {
+        "Body": "{\n    if (thread != null) {\n        try {\n            if (timeout == 0) {\n                thread.join();\n            } else {\n                final long timeToWait = timeout + org.apache.commons.exec.PumpStreamHandler.STOP_TIMEOUT_ADDITION;\n                final long startTime = java.lang.System.currentTimeMillis();\n                thread.join(timeToWait);\n                if (java.lang.System.currentTimeMillis() > (startTime + timeToWait)) {\n                    final java.lang.String msg = (\"The stop timeout of \" + timeout) + \" ms was exceeded\";\n                    caught = new org.apache.commons.exec.ExecuteException(msg, org.apache.commons.exec.Executor.INVALID_EXITVALUE);\n                }\n            }\n        } catch (final java.lang.InterruptedException e) {\n            thread.interrupt();\n        }\n    }\n}",
+        "ClassName": "PumpStreamHandler",
+        "Label": "method",
+        "MethodName": "stopThread"
+    },
+    {
+        "Body": "{\n    try {\n        process.getInputStream().close();\n    } catch (final java.io.IOException e) {\n        setExceptionCaught(e);\n    }\n    try {\n        process.getOutputStream().close();\n    } catch (final java.io.IOException e) {\n        setExceptionCaught(e);\n    }\n    try {\n        process.getErrorStream().close();\n    } catch (final java.io.IOException e) {\n        setExceptionCaught(e);\n    }\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "closeProcessStreams"
+    },
+    {
+        "Body": "{\n    if (org.apache.commons.exec.OS.isFamilyWindows()) {\n        return new java.io.File(script + \".bat\");\n    } else\n        if (org.apache.commons.exec.OS.isFamilyUnix()) {\n            return new java.io.File(script + \".sh\");\n        } else\n            if (org.apache.commons.exec.OS.isFamilyOpenVms()) {\n                return new java.io.File(script + \".dcl\");\n            } else {\n                throw new junit.framework.AssertionFailedError(\"Test not supported for this OS\");\n            }\n\n\n}",
+        "ClassName": "TestUtil",
+        "Label": "method",
+        "MethodName": "resolveScriptForOS"
+    },
+    {
+        "Body": "{\n    if (this.exitValues == null) {\n        return false;\n    } else\n        if (this.exitValues.length == 0) {\n            return this.launcher.isFailure(exitValue);\n        } else {\n            for (final int exitValue2 : this.exitValues) {\n                if (exitValue2 == exitValue) {\n                    return false;\n                }\n            }\n        }\n\n    return true;\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "isFailure"
+    },
+    {
+        "Body": "{\n    if (org.apache.commons.exec.OS.isFamilyWindows()) {\n        return new int[]{ 0, 1 };\n    } else\n        if (org.apache.commons.exec.OS.isFamilyUnix()) {\n            return new int[]{ 0, 1 };\n        } else\n            if (org.apache.commons.exec.OS.isFamilyOpenVms()) {\n                return new int[]{ 1, 2 };\n            } else {\n                throw new junit.framework.AssertionFailedError(\"Test not supported for this OS\");\n            }\n\n\n}",
+        "ClassName": "TestUtil",
+        "Label": "method",
+        "MethodName": "getTestScriptCodesForOS"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.OS.isFamily(org.apache.commons.exec.OS.FAMILY_ZOS);\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isFamilyZOS"
+    },
+    {
+        "Body": "{\n    if (procEnvironment == null) {\n        final java.util.Map<java.lang.String, java.lang.String> env = java.lang.System.getenv();\n        procEnvironment = createEnvironmentMap();\n        procEnvironment.putAll(env);\n    }\n    return procEnvironment;\n}",
+        "ClassName": "DefaultProcessingEnvironment",
+        "Label": "method",
+        "MethodName": "createProcEnvironment"
+    },
+    {
+        "Body": "{\n    if (source == null) {\n        return null;\n    }\n    final java.util.Map<K, V> result = new java.util.HashMap<K, V>();\n    result.putAll(source);\n    return result;\n}",
+        "ClassName": "MapUtils",
+        "Label": "method",
+        "MethodName": "copy"
+    },
+    {
+        "Body": "{\n    return watchdog;\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "getWatchdog"
+    },
+    {
+        "Body": "{\n    if (dirtyExecutable == null) {\n        throw new java.lang.IllegalArgumentException(\"Executable can not be null\");\n    } else\n        if (dirtyExecutable.trim().length() == 0) {\n            throw new java.lang.IllegalArgumentException(\"Executable can not be empty\");\n        } else {\n            return org.apache.commons.exec.util.StringUtils.fixFileSeparatorChar(dirtyExecutable);\n        }\n\n}",
+        "ClassName": "CommandLine",
+        "Label": "method",
+        "MethodName": "toCleanExecutable"
+    },
+    {
+        "Body": "{\n    if (this.exceptionCaught == null) {\n        this.exceptionCaught = e;\n    }\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "setExceptionCaught"
+    },
+    {
+        "Body": "{\n    if (environment == null) {\n        return null;\n    }\n    final java.lang.String[] result = new java.lang.String[environment.size()];\n    int i = 0;\n    for (final java.util.Map.Entry<java.lang.String, java.lang.String> entry : environment.entrySet()) {\n        final java.lang.String key = (entry.getKey() == null) ? \"\" : entry.getKey().toString();\n        final java.lang.String value = (entry.getValue() == null) ? \"\" : entry.getValue().toString();\n        result[i] = (key + \"=\") + value;\n        i++;\n    }\n    return result;\n}",
+        "ClassName": "EnvironmentUtils",
+        "Label": "method",
+        "MethodName": "toStrings"
+    },
+    {
+        "Body": "{\n    boolean retValue = false;\n    if ((((family != null) || (name != null)) || (arch != null)) || (version != null)) {\n        boolean isFamily = true;\n        boolean isName = true;\n        boolean isArch = true;\n        boolean isVersion = true;\n        if (family != null) {\n            boolean isWindows = org.apache.commons.exec.OS.OS_NAME.contains(org.apache.commons.exec.OS.FAMILY_WINDOWS);\n            boolean is9x = false;\n            boolean isNT = false;\n            if (isWindows) {\n                is9x = ((org.apache.commons.exec.OS.OS_NAME.contains(\"95\") || org.apache.commons.exec.OS.OS_NAME.contains(\"98\")) || org.apache.commons.exec.OS.OS_NAME.contains(\"me\")) || org.apache.commons.exec.OS.OS_NAME.contains(\"ce\");\n                isNT = !is9x;\n            }\n            if (family.equals(org.apache.commons.exec.OS.FAMILY_WINDOWS)) {\n                isFamily = isWindows;\n            } else\n                if (family.equals(org.apache.commons.exec.OS.FAMILY_9X)) {\n                    isFamily = isWindows && is9x;\n                } else\n                    if (family.equals(org.apache.commons.exec.OS.FAMILY_NT)) {\n                        isFamily = isWindows && isNT;\n                    } else\n                        if (family.equals(org.apache.commons.exec.OS.FAMILY_OS2)) {\n                            isFamily = org.apache.commons.exec.OS.OS_NAME.contains(org.apache.commons.exec.OS.FAMILY_OS2);\n                        } else\n                            if (family.equals(org.apache.commons.exec.OS.FAMILY_NETWARE)) {\n                                isFamily = org.apache.commons.exec.OS.OS_NAME.contains(org.apache.commons.exec.OS.FAMILY_NETWARE);\n                            } else\n                                if (family.equals(org.apache.commons.exec.OS.FAMILY_DOS)) {\n                                    isFamily = org.apache.commons.exec.OS.PATH_SEP.equals(\";\") && (!org.apache.commons.exec.OS.isFamily(org.apache.commons.exec.OS.FAMILY_NETWARE));\n                                } else\n                                    if (family.equals(org.apache.commons.exec.OS.FAMILY_MAC)) {\n                                        isFamily = org.apache.commons.exec.OS.OS_NAME.contains(org.apache.commons.exec.OS.FAMILY_MAC) || org.apache.commons.exec.OS.OS_NAME.contains(org.apache.commons.exec.OS.DARWIN);\n                                    } else\n                                        if (family.equals(org.apache.commons.exec.OS.FAMILY_TANDEM)) {\n                                            isFamily = org.apache.commons.exec.OS.OS_NAME.contains(\"nonstop_kernel\");\n                                        } else\n                                            if (family.equals(org.apache.commons.exec.OS.FAMILY_UNIX)) {\n                                                isFamily = (org.apache.commons.exec.OS.PATH_SEP.equals(\":\") && (!org.apache.commons.exec.OS.isFamily(org.apache.commons.exec.OS.FAMILY_VMS))) && (((!org.apache.commons.exec.OS.isFamily(org.apache.commons.exec.OS.FAMILY_MAC)) || org.apache.commons.exec.OS.OS_NAME.endsWith(\"x\")) || org.apache.commons.exec.OS.OS_NAME.contains(org.apache.commons.exec.OS.DARWIN));\n                                            } else\n                                                if (family.equals(org.apache.commons.exec.OS.FAMILY_ZOS)) {\n                                                    isFamily = org.apache.commons.exec.OS.OS_NAME.contains(org.apache.commons.exec.OS.FAMILY_ZOS) || org.apache.commons.exec.OS.OS_NAME.contains(\"os/390\");\n                                                } else\n                                                    if (family.equals(org.apache.commons.exec.OS.FAMILY_OS400)) {\n                                                        isFamily = org.apache.commons.exec.OS.OS_NAME.contains(org.apache.commons.exec.OS.FAMILY_OS400);\n                                                    } else\n                                                        if (family.equals(org.apache.commons.exec.OS.FAMILY_VMS)) {\n                                                            isFamily = org.apache.commons.exec.OS.OS_NAME.contains(org.apache.commons.exec.OS.FAMILY_VMS);\n                                                        } else {\n                                                            throw new java.lang.RuntimeException((\"Don\\'t know how to detect os family \\\"\" + family) + \"\\\"\");\n                                                        }\n\n\n\n\n\n\n\n\n\n\n\n        }\n        if (name != null) {\n            isName = name.equals(org.apache.commons.exec.OS.OS_NAME);\n        }\n        if (arch != null) {\n            isArch = arch.equals(org.apache.commons.exec.OS.OS_ARCH);\n        }\n        if (version != null) {\n            isVersion = version.equals(org.apache.commons.exec.OS.OS_VERSION);\n        }\n        retValue = ((isFamily && isName) && isArch) && isVersion;\n    }\n    return retValue;\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isOs"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.OS.isFamily(org.apache.commons.exec.OS.FAMILY_MAC);\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isFamilyMac"
+    },
+    {
+        "Body": "{\n    if (this.launcher == null) {\n        throw new java.lang.IllegalStateException(\"CommandLauncher can not be null\");\n    }\n    if ((dir != null) && (!dir.exists())) {\n        throw new java.io.IOException(dir + \" doesn't exist.\");\n    }\n    return this.launcher.exec(command, env, dir);\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "launch"
+    },
+    {
+        "Body": "{\n    final java.lang.String[] result = new java.lang.String[arguments.size() + 1];\n    result[0] = this.getExecutable();\n    java.lang.System.arraycopy(getArguments(), 0, result, 1, result.length - 1);\n    return result;\n}",
+        "ClassName": "CommandLine",
+        "Label": "method",
+        "MethodName": "toStrings"
+    },
+    {
+        "Body": "{\n    synchronized(processes) {\n        if (processes.size() == 0) {\n            addShutdownHook();\n        }\n        processes.addElement(process);\n        return processes.contains(process);\n    }\n}",
+        "ClassName": "ShutdownHookProcessDestroyer",
+        "Label": "method",
+        "MethodName": "add"
+    },
+    {
+        "Body": "{\n    return level;\n}",
+        "ClassName": "LogOutputStream",
+        "Label": "method",
+        "MethodName": "getMessageLevel"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.environment.EnvironmentUtils.PROCESSING_ENVIRONMENT_IMPLEMENTATION.getProcEnvironment();\n}",
+        "ClassName": "EnvironmentUtils",
+        "Label": "method",
+        "MethodName": "getProcEnvironment"
+    },
+    {
+        "Body": "{\n    final java.lang.String[] envVar = org.apache.commons.exec.environment.EnvironmentUtils.toStrings(env);\n    return java.lang.Runtime.getRuntime().exec(cmd.toStrings(), envVar);\n}",
+        "ClassName": "CommandLauncherImpl",
+        "Label": "method",
+        "MethodName": "exec"
+    },
+    {
+        "Body": "{\n    this.workingDirectory = dir;\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "setWorkingDirectory"
+    },
+    {
+        "Body": "{\n    final java.lang.Thread result = new java.lang.Thread(new org.apache.commons.exec.StreamPumper(is, os, closeWhenExhausted), \"Exec Stream Pumper\");\n    result.setDaemon(true);\n    return result;\n}",
+        "ClassName": "PumpStreamHandler",
+        "Label": "method",
+        "MethodName": "createPump"
+    },
+    {
+        "Body": "{\n    if (caught != null) {\n        throw caught;\n    }\n}",
+        "ClassName": "ExecuteWatchdog",
+        "Label": "method",
+        "MethodName": "checkException"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine vmsCmd = new org.apache.commons.exec.CommandLine(createCommandFile(cmd, env).getPath());\n    return super.exec(vmsCmd, env, workingDir);\n}",
+        "ClassName": "VmsCommandLauncher",
+        "Label": "method",
+        "MethodName": "exec"
+    },
+    {
+        "Body": "{\n    while (!isFinished()) {\n        wait();\n    } \n}",
+        "ClassName": "StreamPumper",
+        "Label": "method",
+        "MethodName": "waitFor"
+    },
+    {
+        "Body": "{\n    return (\"[\" + org.apache.commons.exec.util.StringUtils.toString(toStrings(), \", \")) + \"]\";\n}",
+        "ClassName": "CommandLine",
+        "Label": "method",
+        "MethodName": "toString"
+    },
+    {
+        "Body": "{\n    return this.exceptionCaught;\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "getExceptionCaught"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.OS.isOs(null, name, null, null);\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isName"
+    },
+    {
+        "Body": "{\n    synchronized(processes) {\n        final boolean processRemoved = processes.removeElement(process);\n        if (processRemoved && (processes.size() == 0)) {\n            removeShutdownHook();\n        }\n        return processRemoved;\n    }\n}",
+        "ClassName": "ShutdownHookProcessDestroyer",
+        "Label": "method",
+        "MethodName": "remove"
+    },
+    {
+        "Body": "{\n    org.apache.commons.exec.ExecuteWatchdog watchdog = new org.apache.commons.exec.ExecuteWatchdog(4000);\n    org.apache.commons.exec.CommandLine commandLine = new org.apache.commons.exec.CommandLine(\"/bin/sh\");\n    java.io.File testScript = org.apache.commons.exec.TestUtil.resolveScriptForOS(\"./src/test/scripts/issues/\" + scriptName);\n    commandLine.addArgument(testScript.getAbsolutePath());\n    org.apache.commons.exec.DefaultExecutor executor = new org.apache.commons.exec.DefaultExecutor();\n    executor.setExitValues(null);\n    executor.setWatchdog(watchdog);\n    java.io.FileOutputStream fos = new java.io.FileOutputStream(outputFile);\n    org.apache.commons.exec.PumpStreamHandler streamHandler = new org.apache.commons.exec.PumpStreamHandler(fos);\n    executor.setStreamHandler(streamHandler);\n    executor.execute(commandLine);\n    if (watchdog.killedProcess()) {\n        throw new java.util.concurrent.TimeoutException(java.lang.String.format(\"Transcode process was killed on timeout %1$s ms, command line %2$s\", 4000, commandLine.toString()));\n    }\n}",
+        "ClassName": "Exec62Test",
+        "Label": "method",
+        "MethodName": "execute"
+    },
+    {
+        "Body": "{\n    return exitValue;\n}",
+        "ClassName": "ExecuteException",
+        "Label": "method",
+        "MethodName": "getExitValue"
+    },
+    {
+        "Body": "{\n    if (!running) {\n        destroyProcessThread = new org.apache.commons.exec.ShutdownHookProcessDestroyer.ProcessDestroyerImpl();\n        java.lang.Runtime.getRuntime().addShutdownHook(destroyProcessThread);\n        added = true;\n    }\n}",
+        "ClassName": "ShutdownHookProcessDestroyer",
+        "Label": "method",
+        "MethodName": "addShutdownHook"
+    },
+    {
+        "Body": "{\n    if (org.apache.commons.exec.util.DebugUtils.isDebugEnabled()) {\n        java.lang.System.err.println(msg);\n        e.printStackTrace();\n    }\n    if (!org.apache.commons.exec.util.DebugUtils.isLenientEnabled()) {\n        if (e instanceof java.lang.RuntimeException) {\n            throw ((java.lang.RuntimeException) (e));\n        }\n        throw new java.lang.RuntimeException(e.getMessage());\n    }\n}",
+        "ClassName": "DebugUtils",
+        "Label": "method",
+        "MethodName": "handleException"
+    },
+    {
+        "Body": "{\n    java.lang.System.setProperty(\"org.apache.commons.exec.lenient\", \"false\");\n    java.lang.System.setProperty(\"org.apache.commons.exec.debug\", \"true\");\n}",
+        "ClassName": "LogOutputStreamTest",
+        "Label": "method",
+        "MethodName": "classSetUp"
+    },
+    {
+        "Body": "{\n    if (inputStreamPumper != null) {\n        inputStreamPumper.stopProcessing();\n    }\n    stopThread(outputThread, stopTimeout);\n    stopThread(errorThread, stopTimeout);\n    stopThread(inputThread, stopTimeout);\n    if ((err != null) && (err != out)) {\n        try {\n            err.flush();\n        } catch (final java.io.IOException e) {\n            final java.lang.String msg = \"Got exception while flushing the error stream : \" + e.getMessage();\n            org.apache.commons.exec.util.DebugUtils.handleException(msg, e);\n        }\n    }\n    if (out != null) {\n        try {\n            out.flush();\n        } catch (final java.io.IOException e) {\n            final java.lang.String msg = \"Got exception while flushing the output stream\";\n            org.apache.commons.exec.util.DebugUtils.handleException(msg, e);\n        }\n    }\n    if (caught != null) {\n        throw caught;\n    }\n}",
+        "ClassName": "PumpStreamHandler",
+        "Label": "method",
+        "MethodName": "stop"
+    },
+    {
+        "Body": "{\n    return name.getMethodName();\n}",
+        "ClassName": "AbstractExecTest",
+        "Label": "method",
+        "MethodName": "getName"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.OS.isOs(null, null, null, version);\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isVersion"
+    },
+    {
+        "Body": "{\n    return exitValue != 0;\n}",
+        "ClassName": "CommandLauncherImpl",
+        "Label": "method",
+        "MethodName": "isFailure"
+    },
+    {
+        "Body": "{\n    final java.lang.StringBuilder sb = new java.lang.StringBuilder();\n    for (int i = 0; i < strings.length; i++) {\n        if (i > 0) {\n            sb.append(separator);\n        }\n        sb.append(strings[i]);\n    }\n    return sb.toString();\n}",
+        "ClassName": "StringUtils",
+        "Label": "method",
+        "MethodName": "toString"
+    },
+    {
+        "Body": "{\n    this.processDestroyer = processDestroyer;\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "setProcessDestroyer"
+    },
+    {
+        "Body": "{\n    java.lang.System.setProperty(\"org.apache.commons.exec.lenient\", \"false\");\n    java.lang.System.setProperty(\"org.apache.commons.exec.debug\", \"true\");\n}",
+        "ClassName": "StandAloneTest",
+        "Label": "method",
+        "MethodName": "classSetUp"
+    },
+    {
+        "Body": "{\n    final java.util.StringTokenizer tokens = new java.util.StringTokenizer(input, splitChar);\n    final java.util.List<java.lang.String> strList = new java.util.ArrayList<java.lang.String>();\n    while (tokens.hasMoreTokens()) {\n        strList.add(tokens.nextToken());\n    } \n    return strList.toArray(new java.lang.String[strList.size()]);\n}",
+        "ClassName": "StringUtils",
+        "Label": "method",
+        "MethodName": "split"
+    },
+    {
+        "Body": "{\n    stopped = false;\n    final java.lang.Thread t = new java.lang.Thread(this, \"WATCHDOG\");\n    t.setDaemon(true);\n    t.start();\n}",
+        "ClassName": "Watchdog",
+        "Label": "method",
+        "MethodName": "start"
+    },
+    {
+        "Body": "{\n    this.systemOut.close();\n}",
+        "ClassName": "LogOutputStreamTest",
+        "Label": "method",
+        "MethodName": "tearDown"
+    },
+    {
+        "Body": "{\n    final long startTime = java.lang.System.currentTimeMillis();\n    boolean isWaiting;\n    synchronized(this) {\n        long timeLeft = timeout - (java.lang.System.currentTimeMillis() - startTime);\n        isWaiting = timeLeft > 0;\n        while ((!stopped) && isWaiting) {\n            try {\n                wait(timeLeft);\n            } catch (final java.lang.InterruptedException e) {\n            }\n            timeLeft = timeout - (java.lang.System.currentTimeMillis() - startTime);\n            isWaiting = timeLeft > 0;\n        } \n    }\n    if (!isWaiting) {\n        fireTimeoutOccured();\n    }\n}",
+        "ClassName": "Watchdog",
+        "Label": "method",
+        "MethodName": "run"
+    },
+    {
+        "Body": "{\n    observers.addElement(to);\n}",
+        "ClassName": "Watchdog",
+        "Label": "method",
+        "MethodName": "addTimeoutObserver"
+    },
+    {
+        "Body": "{\n    if (workingDir == null) {\n        return exec(cmd, env);\n    }\n    final org.apache.commons.exec.CommandLine newCmd = new org.apache.commons.exec.CommandLine(\"cmd\");\n    newCmd.addArgument(\"/c\");\n    newCmd.addArguments(cmd.toStrings());\n    return exec(newCmd, env);\n}",
+        "ClassName": "OS2CommandLauncher",
+        "Label": "method",
+        "MethodName": "exec"
+    },
+    {
+        "Body": "{\n    this.processStarted = true;\n    this.caught = e;\n    this.notifyAll();\n}",
+        "ClassName": "ExecuteWatchdog",
+        "Label": "method",
+        "MethodName": "failedToStart"
+    },
+    {
+        "Body": "{\n    execute(command, null, handler);\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "execute"
+    },
+    {
+        "Body": "{\n    final org.apache.commons.exec.CommandLine commandLine = null;\n    return commandLine;\n}",
+        "ClassName": "DefaultProcessingEnvironment",
+        "Label": "method",
+        "MethodName": "getProcEnvCommand"
+    },
+    {
+        "Body": "{\n    final java.lang.Process process;\n    exceptionCaught = null;\n    try {\n        process = this.launch(command, environment, dir);\n    } catch (final java.io.IOException e) {\n        if (watchdog != null) {\n            watchdog.failedToStart(e);\n        }\n        throw e;\n    }\n    try {\n        streams.setProcessInputStream(process.getOutputStream());\n        streams.setProcessOutputStream(process.getInputStream());\n        streams.setProcessErrorStream(process.getErrorStream());\n    } catch (final java.io.IOException e) {\n        process.destroy();\n        if (watchdog != null) {\n            watchdog.failedToStart(e);\n        }\n        throw e;\n    }\n    streams.start();\n    try {\n        if (this.getProcessDestroyer() != null) {\n            this.getProcessDestroyer().add(process);\n        }\n        if (watchdog != null) {\n            watchdog.start(process);\n        }\n        int exitValue = org.apache.commons.exec.Executor.INVALID_EXITVALUE;\n        try {\n            exitValue = process.waitFor();\n        } catch (final java.lang.InterruptedException e) {\n            process.destroy();\n        } finally {\n            java.lang.Thread.interrupted();\n        }\n        if (watchdog != null) {\n            watchdog.stop();\n        }\n        try {\n            streams.stop();\n        } catch (final java.io.IOException e) {\n            setExceptionCaught(e);\n        }\n        closeProcessStreams(process);\n        if (getExceptionCaught() != null) {\n            throw getExceptionCaught();\n        }\n        if (watchdog != null) {\n            try {\n                watchdog.checkException();\n            } catch (final java.io.IOException e) {\n                throw e;\n            } catch (final java.lang.Exception e) {\n                java.io.IOException ioe = new java.io.IOException(e.getMessage());\n                ioe.initCause(e);\n                throw ioe;\n            }\n        }\n        if (this.isFailure(exitValue)) {\n            throw new org.apache.commons.exec.ExecuteException(\"Process exited with an error: \" + exitValue, exitValue);\n        }\n        return exitValue;\n    } finally {\n        if (this.getProcessDestroyer() != null) {\n            this.getProcessDestroyer().remove(process);\n        }\n    }\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "executeInternal"
+    },
+    {
+        "Body": "{\n    final byte c = ((byte) (cc));\n    if ((c == '\\n') || (c == '\\r')) {\n        if (!skip) {\n            processBuffer();\n        }\n    } else {\n        buffer.write(cc);\n    }\n    skip = c == '\\r';\n}",
+        "ClassName": "LogOutputStream",
+        "Label": "method",
+        "MethodName": "write"
+    },
+    {
+        "Body": "{\n    this.streamHandler = streamHandler;\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "setStreamHandler"
+    },
+    {
+        "Body": "{\n    try {\n        try {\n            if (process != null) {\n                process.exitValue();\n            }\n        } catch (final java.lang.IllegalThreadStateException itse) {\n            if (watch) {\n                killedProcess = true;\n                process.destroy();\n            }\n        }\n    } catch (final java.lang.Exception e) {\n        caught = e;\n        org.apache.commons.exec.util.DebugUtils.handleException(\"Getting the exit value of the process failed\", e);\n    } finally {\n        cleanUp();\n    }\n}",
+        "ClassName": "ExecuteWatchdog",
+        "Label": "method",
+        "MethodName": "timeoutOccured"
+    },
+    {
+        "Body": "{\n    if (outputThread != null) {\n        outputThread.start();\n    }\n    if (errorThread != null) {\n        errorThread.start();\n    }\n    if (inputThread != null) {\n        inputThread.start();\n    }\n}",
+        "ClassName": "PumpStreamHandler",
+        "Label": "method",
+        "MethodName": "start"
+    },
+    {
+        "Body": "{\n    int exitValue;\n    org.apache.commons.exec.ExecuteWatchdog watchdog = null;\n    org.apache.commons.exec.TutorialTest.PrintResultHandler resultHandler;\n    final java.util.Map<java.lang.String, java.io.File> map = new java.util.HashMap<java.lang.String, java.io.File>();\n    map.put(\"file\", file);\n    final org.apache.commons.exec.CommandLine commandLine = new org.apache.commons.exec.CommandLine(acroRd32Script);\n    commandLine.addArgument(\"/p\");\n    commandLine.addArgument(\"/h\");\n    commandLine.addArgument(\"${file}\");\n    commandLine.setSubstitutionMap(map);\n    final org.apache.commons.exec.Executor executor = new org.apache.commons.exec.DefaultExecutor();\n    executor.setExitValue(1);\n    if (printJobTimeout > 0) {\n        watchdog = new org.apache.commons.exec.ExecuteWatchdog(printJobTimeout);\n        executor.setWatchdog(watchdog);\n    }\n    if (printInBackground) {\n        java.lang.System.out.println(\"[print] Executing non-blocking print job  ...\");\n        resultHandler = new org.apache.commons.exec.TutorialTest.PrintResultHandler(watchdog);\n        executor.execute(commandLine, resultHandler);\n    } else {\n        java.lang.System.out.println(\"[print] Executing blocking print job  ...\");\n        exitValue = executor.execute(commandLine);\n        resultHandler = new org.apache.commons.exec.TutorialTest.PrintResultHandler(exitValue);\n    }\n    return resultHandler;\n}",
+        "ClassName": "TutorialTest",
+        "Label": "method",
+        "MethodName": "print"
+    },
+    {
+        "Body": "{\n    stopped = true;\n    notifyAll();\n}",
+        "ClassName": "Watchdog",
+        "Label": "method",
+        "MethodName": "stop"
+    },
+    {
+        "Body": "{\n    if (hasWatchdog) {\n        watchdog.stop();\n    }\n    watch = false;\n    process = null;\n}",
+        "ClassName": "ExecuteWatchdog",
+        "Label": "method",
+        "MethodName": "stop"
+    },
+    {
+        "Body": "{\n    return workingDirectory;\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "getWorkingDirectory"
+    },
+    {
+        "Body": "{\n    org.apache.commons.exec.launcher.CommandLauncher launcher;\n    if (org.apache.commons.exec.OS.isFamilyOpenVms()) {\n        launcher = new org.apache.commons.exec.launcher.VmsCommandLauncher();\n    } else {\n        launcher = new org.apache.commons.exec.launcher.Java13CommandLauncher();\n    }\n    return launcher;\n}",
+        "ClassName": "CommandLauncherFactory",
+        "Label": "method",
+        "MethodName": "createVMLauncher"
+    },
+    {
+        "Body": "{\n    processStarted = false;\n}",
+        "ClassName": "ExecuteWatchdog",
+        "Label": "method",
+        "MethodName": "setProcessNotStarted"
+    },
+    {
+        "Body": "{\n    final java.util.Enumeration<org.apache.commons.exec.TimeoutObserver> e = observers.elements();\n    while (e.hasMoreElements()) {\n        e.nextElement().timeoutOccured(this);\n    } \n}",
+        "ClassName": "Watchdog",
+        "Label": "method",
+        "MethodName": "fireTimeoutOccured"
+    },
+    {
+        "Body": "{\n    this.baos = new java.io.ByteArrayOutputStream();\n    this.exec.setStreamHandler(new org.apache.commons.exec.PumpStreamHandler(baos, baos));\n}",
+        "ClassName": "Exec36Test",
+        "Label": "method",
+        "MethodName": "setUp"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.OS.isFamily(org.apache.commons.exec.OS.FAMILY_VMS);\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isFamilyOpenVms"
+    },
+    {
+        "Body": "{\n    observers.removeElement(to);\n}",
+        "ClassName": "Watchdog",
+        "Label": "method",
+        "MethodName": "removeTimeoutObserver"
+    },
+    {
+        "Body": "{\n    this.baos.close();\n    foreverOutputFile.delete();\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "method",
+        "MethodName": "tearDown"
+    },
+    {
+        "Body": "{\n    if (buffer.size() > 0) {\n        processBuffer();\n    }\n    super.close();\n}",
+        "ClassName": "LogOutputStream",
+        "Label": "method",
+        "MethodName": "close"
+    },
+    {
+        "Body": "{\n    this.setExitValues(new int[]{ value });\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "setExitValue"
+    },
+    {
+        "Body": "{\n    final java.lang.Thread t = super.createThread(runnable, name);\n    t.setDaemon(true);\n    return t;\n}",
+        "ClassName": "DaemonExecutor",
+        "Label": "method",
+        "MethodName": "createThread"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.OS.isOs(family, null, null, null);\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isFamily"
+    },
+    {
+        "Body": "{\n    org.apache.commons.exec.CommandLine.Argument currArgument;\n    java.lang.String expandedArgument;\n    final java.lang.String[] result = new java.lang.String[arguments.size()];\n    for (int i = 0; i < result.length; i++) {\n        currArgument = arguments.get(i);\n        expandedArgument = expandArgument(currArgument.getValue());\n        result[i] = (currArgument.isHandleQuoting()) ? org.apache.commons.exec.util.StringUtils.quoteArgument(expandedArgument) : expandedArgument;\n    }\n    return result;\n}",
+        "ClassName": "CommandLine",
+        "Label": "method",
+        "MethodName": "getArguments"
+    },
+    {
+        "Body": "{\n    if (workingDir == null) {\n        return exec(cmd, env);\n    }\n    final org.apache.commons.exec.CommandLine newCmd = new org.apache.commons.exec.CommandLine(\"cmd\");\n    newCmd.addArgument(\"/c\");\n    newCmd.addArguments(cmd.toStrings());\n    return exec(newCmd, env);\n}",
+        "ClassName": "WinNTCommandLauncher",
+        "Label": "method",
+        "MethodName": "exec"
+    },
+    {
+        "Body": "{\n    if ((toProcess == null) || (toProcess.length() == 0)) {\n        return new java.lang.String[0];\n    }\n    final int normal = 0;\n    final int inQuote = 1;\n    final int inDoubleQuote = 2;\n    int state = normal;\n    final java.util.StringTokenizer tok = new java.util.StringTokenizer(toProcess, \"\\\"\\' \", true);\n    final java.util.ArrayList<java.lang.String> list = new java.util.ArrayList<java.lang.String>();\n    java.lang.StringBuilder current = new java.lang.StringBuilder();\n    boolean lastTokenHasBeenQuoted = false;\n    while (tok.hasMoreTokens()) {\n        final java.lang.String nextTok = tok.nextToken();\n        switch (state) {\n            case inQuote :\n                if (\"\\'\".equals(nextTok)) {\n                    lastTokenHasBeenQuoted = true;\n                    state = normal;\n                } else {\n                    current.append(nextTok);\n                }\n                break;\n            case inDoubleQuote :\n                if (\"\\\"\".equals(nextTok)) {\n                    lastTokenHasBeenQuoted = true;\n                    state = normal;\n                } else {\n                    current.append(nextTok);\n                }\n                break;\n            default :\n                if (\"\\'\".equals(nextTok)) {\n                    state = inQuote;\n                } else\n                    if (\"\\\"\".equals(nextTok)) {\n                        state = inDoubleQuote;\n                    } else\n                        if (\" \".equals(nextTok)) {\n                            if (lastTokenHasBeenQuoted || (current.length() != 0)) {\n                                list.add(current.toString());\n                                current = new java.lang.StringBuilder();\n                            }\n                        } else {\n                            current.append(nextTok);\n                        }\n\n\n                lastTokenHasBeenQuoted = false;\n                break;\n        }\n    } \n    if (lastTokenHasBeenQuoted || (current.length() != 0)) {\n        list.add(current.toString());\n    }\n    if ((state == inQuote) || (state == inDoubleQuote)) {\n        throw new java.lang.IllegalArgumentException(\"Unbalanced quotes in \" + toProcess);\n    }\n    final java.lang.String[] args = new java.lang.String[list.size()];\n    return list.toArray(args);\n}",
+        "ClassName": "CommandLine",
+        "Label": "method",
+        "MethodName": "translateCommandline"
+    },
+    {
+        "Body": "{\n    return err;\n}",
+        "ClassName": "PumpStreamHandler",
+        "Label": "method",
+        "MethodName": "getErr"
+    },
+    {
+        "Body": "{\n    return streamHandler;\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "getStreamHandler"
+    },
+    {
+        "Body": "{\n    return processes.size();\n}",
+        "ClassName": "ShutdownHookProcessDestroyer",
+        "Label": "method",
+        "MethodName": "size"
+    },
+    {
+        "Body": "{\n    return this.processDestroyer;\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "getProcessDestroyer"
+    },
+    {
+        "Body": "{\n    this.systemOut = new org.apache.commons.exec.LogOutputStreamTest.SystemLogOutputStream(1);\n    this.exec.setStreamHandler(new org.apache.commons.exec.PumpStreamHandler(systemOut, systemOut));\n}",
+        "ClassName": "LogOutputStreamTest",
+        "Label": "method",
+        "MethodName": "setUp"
+    },
+    {
+        "Body": "{\n    stop = true;\n}",
+        "ClassName": "InputStreamPumper",
+        "Label": "method",
+        "MethodName": "stopProcessing"
+    },
+    {
+        "Body": "{\n    synchronized(this) {\n        finished = false;\n    }\n    final byte[] buf = new byte[this.size];\n    int length;\n    try {\n        while ((length = is.read(buf)) > 0) {\n            os.write(buf, 0, length);\n        } \n    } catch (final java.lang.Exception e) {\n    } finally {\n        if (closeWhenExhausted) {\n            try {\n                os.close();\n            } catch (final java.io.IOException e) {\n                final java.lang.String msg = \"Got exception while closing exhausted output stream\";\n                org.apache.commons.exec.util.DebugUtils.handleException(msg, e);\n            }\n        }\n        synchronized(this) {\n            finished = true;\n            notifyAll();\n        }\n    }\n}",
+        "ClassName": "StreamPumper",
+        "Label": "method",
+        "MethodName": "run"
+    },
+    {
+        "Body": "{\n    this.watchdog = watchDog;\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "setWatchdog"
+    },
+    {
+        "Body": "{\n    ensureStarted();\n    return watch;\n}",
+        "ClassName": "ExecuteWatchdog",
+        "Label": "method",
+        "MethodName": "isWatching"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.OS.isFamily(org.apache.commons.exec.OS.FAMILY_TANDEM);\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isFamilyTandem"
+    },
+    {
+        "Body": "{\n    final java.lang.String debug = java.lang.System.getProperty(org.apache.commons.exec.util.DebugUtils.COMMONS_EXEC_DEBUG, java.lang.Boolean.FALSE.toString());\n    return java.lang.Boolean.TRUE.toString().equalsIgnoreCase(debug);\n}",
+        "ClassName": "DebugUtils",
+        "Label": "method",
+        "MethodName": "isDebugEnabled"
+    },
+    {
+        "Body": "{\n    processLine(line, level);\n}",
+        "ClassName": "LogOutputStream",
+        "Label": "method",
+        "MethodName": "processLine"
+    },
+    {
+        "Body": "{\n    outputFile.delete();\n}",
+        "ClassName": "Exec62Test",
+        "Label": "method",
+        "MethodName": "tearDown"
+    },
+    {
+        "Body": "{\n    final java.lang.String[] parsedVariable = org.apache.commons.exec.environment.EnvironmentUtils.parseEnvironmentVariable(keyAndValue);\n    environment.put(parsedVariable[0], parsedVariable[1]);\n}",
+        "ClassName": "EnvironmentUtils",
+        "Label": "method",
+        "MethodName": "addVariableToEnvironment"
+    },
+    {
+        "Body": "{\n    while ((!processStarted) && (caught == null)) {\n        try {\n            this.wait();\n        } catch (final java.lang.InterruptedException e) {\n            throw new java.lang.RuntimeException(e.getMessage());\n        }\n    } \n}",
+        "ClassName": "ExecuteWatchdog",
+        "Label": "method",
+        "MethodName": "ensureStarted"
+    },
+    {
+        "Body": "{\n    this.exitValue = e.getExitValue();\n    this.exception = e;\n    this.hasResult = true;\n}",
+        "ClassName": "DefaultExecuteResultHandler",
+        "Label": "method",
+        "MethodName": "onProcessFailed"
+    },
+    {
+        "Body": "{\n    this.substitutionMap = substitutionMap;\n}",
+        "ClassName": "CommandLine",
+        "Label": "method",
+        "MethodName": "setSubstitutionMap"
+    },
+    {
+        "Body": "{\n    if (line == null) {\n        throw new java.lang.IllegalArgumentException(\"Command line can not be null\");\n    } else\n        if (line.trim().length() == 0) {\n            throw new java.lang.IllegalArgumentException(\"Command line can not be empty\");\n        } else {\n            final java.lang.String[] tmp = org.apache.commons.exec.CommandLine.translateCommandline(line);\n            final org.apache.commons.exec.CommandLine cl = new org.apache.commons.exec.CommandLine(tmp[0]);\n            cl.setSubstitutionMap(substitutionMap);\n            for (int i = 1; i < tmp.length; i++) {\n                cl.addArgument(tmp[i]);\n            }\n            return cl;\n        }\n\n}",
+        "ClassName": "CommandLine",
+        "Label": "method",
+        "MethodName": "parse"
+    },
+    {
+        "Body": "{\n    return myLauncher.exec(cmd, env);\n}",
+        "ClassName": "CommandLauncherProxy",
+        "Label": "method",
+        "MethodName": "exec"
+    },
+    {
+        "Body": "{\n    final int index = keyAndValue.indexOf('=');\n    if (index == (-1)) {\n        throw new java.lang.IllegalArgumentException(\"Environment variable for this platform \" + \"must contain an equals sign ('=')\");\n    }\n    final java.lang.String[] result = new java.lang.String[2];\n    result[0] = keyAndValue.substring(0, index);\n    result[1] = keyAndValue.substring(index + 1);\n    return result;\n}",
+        "ClassName": "EnvironmentUtils",
+        "Label": "method",
+        "MethodName": "parseEnvironmentVariable"
+    },
+    {
+        "Body": "{\n    synchronized(processes) {\n        running = true;\n        final java.util.Enumeration<java.lang.Process> e = processes.elements();\n        while (e.hasMoreElements()) {\n            final java.lang.Process process = e.nextElement();\n            try {\n                process.destroy();\n            } catch (final java.lang.Throwable t) {\n                java.lang.System.err.println(\"Unable to terminate process during process shutdown\");\n            }\n        } \n    }\n}",
+        "ClassName": "ShutdownHookProcessDestroyer",
+        "Label": "method",
+        "MethodName": "run"
+    },
+    {
+        "Body": "{\n    return added;\n}",
+        "ClassName": "ShutdownHookProcessDestroyer",
+        "Label": "method",
+        "MethodName": "isAddedAsShutdownHook"
+    },
+    {
+        "Body": "{\n    return substitutionMap;\n}",
+        "ClassName": "CommandLine",
+        "Label": "method",
+        "MethodName": "getSubstitutionMap"
+    },
+    {
+        "Body": "{\n    if (addArguments != null) {\n        for (final java.lang.String addArgument : addArguments) {\n            addArgument(addArgument, handleQuoting);\n        }\n    }\n    return this;\n}",
+        "ClassName": "CommandLine",
+        "Label": "method",
+        "MethodName": "addArguments"
+    },
+    {
+        "Body": "{\n    if (!hasResult) {\n        throw new java.lang.IllegalStateException(\"The process has not exited yet therefore no result is available ...\");\n    }\n    return exception;\n}",
+        "ClassName": "DefaultExecuteResultHandler",
+        "Label": "method",
+        "MethodName": "getException"
+    },
+    {
+        "Body": "{\n    this.baos.close();\n}",
+        "ClassName": "Exec36Test",
+        "Label": "method",
+        "MethodName": "tearDown"
+    },
+    {
+        "Body": "{\n    return this.cause;\n}",
+        "ClassName": "ExecuteException",
+        "Label": "method",
+        "MethodName": "getCause"
+    },
+    {
+        "Body": "{\n    if (procEnvironment == null) {\n        procEnvironment = this.createProcEnvironment();\n    }\n    final java.util.Map<java.lang.String, java.lang.String> copy = createEnvironmentMap();\n    copy.putAll(procEnvironment);\n    return copy;\n}",
+        "ClassName": "DefaultProcessingEnvironment",
+        "Label": "method",
+        "MethodName": "getProcEnvironment"
+    },
+    {
+        "Body": "{\n    if (argument == null) {\n        return this;\n    }\n    if (handleQuoting) {\n        org.apache.commons.exec.util.StringUtils.quoteArgument(argument);\n    }\n    arguments.add(new org.apache.commons.exec.CommandLine.Argument(argument, handleQuoting));\n    return this;\n}",
+        "ClassName": "CommandLine",
+        "Label": "method",
+        "MethodName": "addArgument"
+    },
+    {
+        "Body": "{\n    final java.lang.String lenient = java.lang.System.getProperty(org.apache.commons.exec.util.DebugUtils.COMMONS_EXEC_LENIENT, java.lang.Boolean.TRUE.toString());\n    return java.lang.Boolean.TRUE.toString().equalsIgnoreCase(lenient);\n}",
+        "ClassName": "DebugUtils",
+        "Label": "method",
+        "MethodName": "isLenientEnabled"
+    },
+    {
+        "Body": "{\n    return finished;\n}",
+        "ClassName": "StreamPumper",
+        "Label": "method",
+        "MethodName": "isFinished"
+    },
+    {
+        "Body": "{\n    final java.lang.String msg = java.lang.String.format(\"The test '%s' is not possible for OS : %s\", name.getMethodName(), org.apache.commons.exec.AbstractExecTest.OS_NAME);\n    java.lang.System.out.println(msg);\n    return msg;\n}",
+        "ClassName": "AbstractExecTest",
+        "Label": "method",
+        "MethodName": "testNotSupportedForCurrentOperatingSystem"
+    },
+    {
+        "Body": "{\n    final java.lang.StringBuffer argBuf = new java.lang.StringBuffer();\n    if ((argStr == null) || (argStr.length() == 0)) {\n        return argBuf;\n    }\n    if ((vars == null) || (vars.size() == 0)) {\n        return argBuf.append(argStr);\n    }\n    final int argStrLength = argStr.length();\n    for (int cIdx = 0; cIdx < argStrLength;) {\n        char ch = argStr.charAt(cIdx);\n        char del = ' ';\n        switch (ch) {\n            case '$' :\n                final java.lang.StringBuilder nameBuf = new java.lang.StringBuilder();\n                del = argStr.charAt(cIdx + 1);\n                if (del == '{') {\n                    cIdx++;\n                    for (++cIdx; cIdx < argStr.length(); ++cIdx) {\n                        ch = argStr.charAt(cIdx);\n                        if (((((ch == '_') || (ch == '.')) || (ch == '-')) || (ch == '+')) || java.lang.Character.isLetterOrDigit(ch)) {\n                            nameBuf.append(ch);\n                        } else {\n                            break;\n                        }\n                    }\n                    if (nameBuf.length() >= 0) {\n                        java.lang.String value;\n                        final java.lang.Object temp = vars.get(nameBuf.toString());\n                        if (temp instanceof java.io.File) {\n                            value = org.apache.commons.exec.util.StringUtils.fixFileSeparatorChar(((java.io.File) (temp)).getAbsolutePath());\n                        } else {\n                            value = (temp != null) ? temp.toString() : null;\n                        }\n                        if (value != null) {\n                            argBuf.append(value);\n                        } else {\n                            if (isLenient) {\n                                argBuf.append(\"${\").append(nameBuf.toString()).append(\"}\");\n                            } else {\n                                throw new java.lang.RuntimeException(\"No value found for : \" + nameBuf);\n                            }\n                        }\n                        del = argStr.charAt(cIdx);\n                        if (del != '}') {\n                            throw new java.lang.RuntimeException(\"Delimiter not found for : \" + nameBuf);\n                        }\n                    }\n                    cIdx++;\n                } else {\n                    argBuf.append(ch);\n                    ++cIdx;\n                }\n                break;\n            default :\n                argBuf.append(ch);\n                ++cIdx;\n                break;\n        }\n    }\n    return argBuf;\n}",
+        "ClassName": "StringUtils",
+        "Label": "method",
+        "MethodName": "stringSubstitution"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.OS.isFamily(org.apache.commons.exec.OS.FAMILY_NT);\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isFamilyWinNT"
+    },
+    {
+        "Body": "{\n    if (err != null) {\n        createProcessErrorPump(is, err);\n    }\n}",
+        "ClassName": "PumpStreamHandler",
+        "Label": "method",
+        "MethodName": "setProcessErrorStream"
+    },
+    {
+        "Body": "{\n    if (input != null) {\n        if (input == java.lang.System.in) {\n            inputThread = createSystemInPump(input, os);\n        } else {\n            inputThread = createPump(input, os, true);\n        }\n    } else {\n        try {\n            os.close();\n        } catch (final java.io.IOException e) {\n            final java.lang.String msg = \"Got exception while closing output stream\";\n            org.apache.commons.exec.util.DebugUtils.handleException(msg, e);\n        }\n    }\n}",
+        "ClassName": "PumpStreamHandler",
+        "Label": "method",
+        "MethodName": "setProcessInputStream"
+    },
+    {
+        "Body": "{\n    final long until = java.lang.System.currentTimeMillis() + timeout;\n    while ((!hasResult()) && (java.lang.System.currentTimeMillis() < until)) {\n        java.lang.Thread.sleep(org.apache.commons.exec.DefaultExecuteResultHandler.SLEEP_TIME_MS);\n    } \n}",
+        "ClassName": "DefaultExecuteResultHandler",
+        "Label": "method",
+        "MethodName": "waitFor"
+    },
+    {
+        "Body": "{\n    return org.apache.commons.exec.OS.isFamily(org.apache.commons.exec.OS.FAMILY_OS400);\n}",
+        "ClassName": "OS",
+        "Label": "method",
+        "MethodName": "isFamilyOS400"
+    },
+    {
+        "Body": "{\n    return (exitValue % 2) == 0;\n}",
+        "ClassName": "VmsCommandLauncher",
+        "Label": "method",
+        "MethodName": "isFailure"
+    },
+    {
+        "Body": "{\n    final java.io.File script = java.io.File.createTempFile(\"EXEC\", \".TMP\");\n    script.deleteOnExit();\n    java.io.PrintWriter out = null;\n    try {\n        out = new java.io.PrintWriter(new java.io.FileWriter(script.getAbsolutePath(), true));\n        if (env != null) {\n            final java.util.Set<java.util.Map.Entry<java.lang.String, java.lang.String>> entries = env.entrySet();\n            for (final java.util.Map.Entry<java.lang.String, java.lang.String> entry : entries) {\n                out.print(\"$ \");\n                out.print(entry.getKey());\n                out.print(\" == \");\n                out.println('\\\"');\n                java.lang.String value = entry.getValue();\n                if (value.indexOf('\\\"') > 0) {\n                    final java.lang.StringBuilder sb = new java.lang.StringBuilder();\n                    for (int i = 0; i < value.length(); i++) {\n                        final char c = value.charAt(i);\n                        if (c == '\\\"') {\n                            sb.append('\\\"');\n                        }\n                        sb.append(c);\n                    }\n                    value = sb.toString();\n                }\n                out.print(value);\n                out.println('\\\"');\n            }\n        }\n        final java.lang.String command = cmd.getExecutable();\n        if (cmd.isFile()) {\n            out.print(\"$ @\");\n            final java.lang.String[] parts = org.apache.commons.exec.util.StringUtils.split(command, \"/\");\n            out.print(parts[0]);\n            out.print(\":[\");\n            out.print(parts[1]);\n            final int lastPart = parts.length - 1;\n            for (int i = 2; i < lastPart; i++) {\n                out.print(\".\");\n                out.print(parts[i]);\n            }\n            out.print(\"]\");\n            out.print(parts[lastPart]);\n        } else {\n            out.print(\"$ \");\n            out.print(command);\n        }\n        final java.lang.String[] args = cmd.getArguments();\n        for (final java.lang.String arg : args) {\n            out.println(\" -\");\n            out.print(arg);\n        }\n        out.println();\n    } finally {\n        if (out != null) {\n            out.close();\n        }\n    }\n    return script;\n}",
+        "ClassName": "VmsCommandLauncher",
+        "Label": "method",
+        "MethodName": "createCommandFile"
+    },
+    {
+        "Body": "{\n    if (buffer.size() > 0) {\n        processBuffer();\n    }\n}",
+        "ClassName": "LogOutputStream",
+        "Label": "method",
+        "MethodName": "flush"
+    },
+    {
+        "Body": "{\n    this.foreverOutputFile.getParentFile().mkdirs();\n    if (this.foreverOutputFile.exists()) {\n        this.foreverOutputFile.delete();\n    }\n    this.baos = new java.io.ByteArrayOutputStream();\n    this.exec.setStreamHandler(new org.apache.commons.exec.PumpStreamHandler(baos, baos));\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "method",
+        "MethodName": "setUp"
+    },
+    {
+        "Body": "{\n    watch = false;\n    process = null;\n}",
+        "ClassName": "ExecuteWatchdog",
+        "Label": "method",
+        "MethodName": "cleanUp"
+    },
+    {
+        "Body": "{\n    outputFile = java.io.File.createTempFile(\"foo\", \".log\");\n}",
+        "ClassName": "Exec62Test",
+        "Label": "method",
+        "MethodName": "setUp"
+    },
+    {
+        "Body": "{\n    final int[] statuses = org.apache.commons.exec.TestUtil.getTestScriptCodesForOS();\n    org.apache.commons.exec.DefaultExecutorTest.SUCCESS_STATUS = statuses[0];\n    org.apache.commons.exec.DefaultExecutorTest.ERROR_STATUS = statuses[1];\n    java.lang.System.setProperty(\"org.apache.commons.exec.lenient\", \"false\");\n    java.lang.System.setProperty(\"org.apache.commons.exec.debug\", \"true\");\n}",
+        "ClassName": "DefaultExecutorTest",
+        "Label": "method",
+        "MethodName": "classSetUp"
+    },
+    {
+        "Body": "{\n    this.exitValues = (values == null) ? null : ((int[]) (values.clone()));\n}",
+        "ClassName": "DefaultExecutor",
+        "Label": "method",
+        "MethodName": "setExitValues"
+    },
+    {
+        "Body": "{\n    if (org.apache.commons.exec.OS.isFamilyWindows()) {\n        return new java.util.TreeMap<java.lang.String, java.lang.String>(new java.util.Comparator<java.lang.String>() {\n            public int compare(final java.lang.String key0, final java.lang.String key1) {\n                return key0.compareToIgnoreCase(key1);\n            }\n        });\n    }\n    return new java.util.HashMap<java.lang.String, java.lang.String>();\n}",
+        "ClassName": "DefaultProcessingEnvironment",
+        "Label": "method",
+        "MethodName": "createEnvironmentMap"
+    }
+]
