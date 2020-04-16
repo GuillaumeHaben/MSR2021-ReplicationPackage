@@ -25,12 +25,17 @@ def main():
 
     # Parameters
     k = 10
-    nbTrees = 50
+    nbTrees = 10
 
     # Load Data
     datasetPath = sys.argv[1]
     data = pd.read_json(datasetPath)
     
+    print("Length of data: ", len(data))
+    project = "okhttp"
+    data = data[(data['ProjectName'] == "/Users/guillaume.haben/Desktop/results-NFT-bodyText/" + project) | (data['ProjectName'] == "/Users/guillaume.haben/Desktop/results-FT-bodyText/" + project)]
+    print("Length of new data: ", len(data))
+
     # Shuffle Data
     data = shuffle(data)
 
