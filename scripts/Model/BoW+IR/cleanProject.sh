@@ -16,6 +16,8 @@ fi
 
 cd $PROJECTS_SOURCES
 git reset --hard HEAD
+git clean -fx > /dev/null 2>&1
+git clean -f -d > /dev/null 2>&1
 git checkout master
 
 

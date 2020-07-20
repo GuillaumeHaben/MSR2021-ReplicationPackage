@@ -17,7 +17,15 @@ fi
 
 cd $PROJECTS_SOURCES
 
-git checkout $COMMIT_ID
-/opt/apache-maven-3.6.2/bin/mvn clean
+git clean -fx > /dev/null 2>&1
+git clean -f -d > /dev/null 2>&1
+git checkout $COMMIT_ID > /dev/null 2>&1
+
+DATE=$(git log -1 --pretty="%aD" | xargs -I {} echo {})
+TIMESTAMP=$(git show -s --format=%ct | xargs -I {} echo {})
+
+echo "$DATE.$TIMESTAMP"
+
+#/opt/apache-maven-3.6.2/bin/mvn clean > /dev/null 2>&1
 
 
