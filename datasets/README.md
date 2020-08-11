@@ -12,3 +12,14 @@
 * `flakyTestsV2.json` contains code metrics of 1359 tests that has been flagged as flaky by DeFlaker.
 * `nonFlakyTests.json` contains code metrics of 14661 tests taken from the same projects as DeFlaker and that are apparently not flaky.
 * `dataset.json` contains both flaky and non flaky tests in one file.
+
+- `v3` contains JSON files per project. Features per test are the following:
+
+* MethodName
+* ClassName
+* ProjectName
+* Commit (date timestamp and ID)
+* Raw source code
+* Code metrics
+* 5 most similar methods representing the CUT
+* Raw source code and code metrics for each CUT. 

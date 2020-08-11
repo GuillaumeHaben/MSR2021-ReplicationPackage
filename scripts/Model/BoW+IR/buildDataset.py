@@ -12,13 +12,14 @@ from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
 
 # Dependencies
-# ./getMethodsBody.sh
-# ./getTestsBody.sh
+# ./getAllMethodsMetrics.sh
+# ./getAllTestMethodsMetrics.sh
+# ./getTestsMetrics.sh
 # ./cleanProject.sh
 # ./prepareProject.sh
 
 # Configuration
-logFileFolder = "/Users/guillaume.haben/Desktop/logBuildDataset/"
+logFileFolder = "/Users/guillaume.haben/Documents/Work/sandbox/preDesktopTrash/logBuildDataset/"
 metricExtractorResultsFolder = "/Users/guillaume.haben/Documents/Work/projects/MetricExtractor/results/"
 percentages = [0.6, 0.7, 0.8, 0.9, 1]
 
@@ -42,7 +43,7 @@ def main():
         projectName = getProjectName(projectSource)
         dataset = []
         # TO TEST, WITH SMALL PROJECT, TO REMOVE LATER
-        if projectName == "oozie":
+        if projectName in ["achilles", "hbase", "logback", "okhttp", "oozie", "oryx", "togglz"]:
             print("    [INFO] Project: ", projectName, "[", counterProject ,"/", len(projectSources), "]")
             # Should be able to delete two lines below
             for project in projectList:
@@ -55,7 +56,14 @@ def main():
                         counterCommit += 1
                         print("____________________________________________________________")
                         print("[INFO] Commit ", commitID, "[", counterCommit ,"/", len(commitFiles), "]")
+                        # Different metrics to retrieve
+                        # if features == "CodeMetrics":
+                        #     getTestAndAddToDataset(commitID, projectSource, dataset, 1)
+                        # elif features == "BagOfWords":
                         getFinalTestsAndAddToDataset(commitID, projectSource, nbSimilarMethods, dataset, 1)
+                        # else:
+                        #     print("[ERROR] Wrong feature config")
+                        #     sys.exit(0)
 
             # If project contains no FT, we jump to next project
             if len(dataset) == 0:
@@ -75,19 +83,24 @@ def main():
             
             print("[INFO]: Processing", len(NFTcommits), "commits.")
             for NFTcommit in NFTcommits:
+                # Different metrics to retrieve
+                # if features == "CodeMetrics":
+                #     dataset = getTestAndAddToDataset(NFTcommit, projectSource, dataset, 0)
+                # elif features == "BagOfWords":
                 dataset = getFinalTestsAndAddToDataset(NFTcommit, projectSource, nbSimilarMethods, dataset, 0)
+                # else:
+                #     print("[ERROR] Wrong feature config")
+                #     sys.exit(0)
 
+            print("[STEP] Remove Non Flaky similar to Flaky.")
+            dataset = removeFlakyFromNonFlaky(dataset, projectName)
             # Save to disk
             displayResultsForProject(projectSource, dataset)  
             saveResults(dataset, projectName)
             dataset = []
 
 def getFinalTestsAndAddToDataset(commitID, projectSource, nbSimilarMethods, dataset, label):
-    # TODO: give commitID info, give Label 0 info, make this code not duplicate
     allTests, allMethods, date, timestamp = getMetrics(commitID, projectSource, label)
-    # In the case of NFT, we remove all FT from NFT for this particular commit
-    if label == 0:
-        allTests = removeFlakyFromNonFlaky(allTests, commitID, getProjectName(projectSource))
     displayResultsForCommit(allTests, allMethods, projectSource, commitID)
 
     print("\n[STEP] Find CUT for each test")
@@ -142,15 +155,15 @@ def getBodies(projectSource, commitID, methodType, label):
     -------
     dataset: Constructed with processResultsFolder()
     """
-    print("\n[STEP] Get " , methodType, " bodies")
+    print("\n[STEP] Get " , methodType, " metrics")
     cleanResultsFolder(projectSource)
     print("    [INFO] Extraction...")
    
     # Which SH script to call depending on the method type 
     if methodType == "method":
-        fileName = "getMethodsBody"
+        fileName = "getAllMethodsMetrics"
     elif methodType == "test":
-        fileName = "getTestsBody"
+        fileName = "getTestsMetrics"
     else:
         print("[ERROR] Wrong methodType")
         sys.exit(1)
@@ -161,7 +174,7 @@ def getBodies(projectSource, commitID, methodType, label):
     # Non Flaky Tests 
     if label == 0 and methodType == "test":
         with open(logFile, "w+") as outfile:
-            subprocess.call(["./getAllTestsBody.sh", projectSource], stdout=outfile)
+            subprocess.call(["./getAllTestMethodsMetrics.sh", projectSource], stdout=outfile)
         print("    [INFO] Done.")
 
     # Flaky Tests
@@ -243,29 +256,38 @@ def buildTestWithCUT(test, similarMethods):
     c = 1
     for method in similarMethods:
         keyName = "CUT_" + str(c)
-        test[keyName] = method["Body"]
+        test[keyName] = {
+            "ClassName": method["ClassName"],
+            "MethodName": method["MethodName"],
+            "Body": method["Body"],
+            "CyclomaticComplexity": method["CyclomaticComplexity"],
+            "HasTimeoutInAnnotations": method["HasTimeoutInAnnotations"],
+            "NumberOfAsserts": method["NumberOfAsserts"],
+            "NumberOfAsynchronousWaits": method["NumberOfAsynchronousWaits"],
+            "NumberOfDates": method["NumberOfDates"],
+            "NumberOfFiles": method["NumberOfFiles"],
+            "NumberOfLines": method["NumberOfLines"],
+            "NumberOfRandoms": method["NumberOfRandoms"],
+            "NumberOfThreads": method["NumberOfThreads"]
+        }
         c += 1
     return test
 
-def removeFlakyFromNonFlaky(allTests, commitID, projectName):
+def removeFlakyFromNonFlaky(dataset, projectName):
     print("\n[STEP] removeFlakyFromNonFlaky")
-    commitFile = getCommitFile(commitID, projectName)
-    print("    [DEBUG] Length of allTests before removing FT", len(allTests))
+    FT = []
     indexesToDelete = []
-    for i in range(len(allTests)):
-        test = allTests[i]
-        commitFileRead = open(commitFile, 'r')
-        lines = commitFileRead.readlines()
-        for line in lines:
-            className = line.split(".")[-2]
-            methodName = line.split(".")[-1].rstrip("\n")
-            if test["ClassName"] == className and test["MethodName"] == methodName:
-                indexesToDelete.append(i)
-    cleanedTests = [i for j, i in enumerate(allTests) if j not in set(indexesToDelete)]
 
-    print("    [DEBUG] Nb of tests removed", len(indexesToDelete))
-    print("    [DEBUG] Length of allTests after removing FT from NFT", len(cleanedTests))
-    return cleanedTests
+    for el in dataset:
+        if el["Label"] == 1:
+            FT.append(el)
+    for i in range(len(dataset)):
+        for flaky in FT:
+            if dataset[i]["MethodName"] == flaky["MethodName"] and dataset[i]["ClassName"] == flaky["ClassName"] and dataset[i]["Label"] == 0:
+                indexesToDelete.append(i)
+    print("[INFO] Number of NFT similar to FT to remove:", len(indexesToDelete))
+    cleanedDataset = [i for j, i in enumerate(dataset) if j not in set(indexesToDelete)]
+    return cleanedDataset
 
 def prepareProject(commitID, projectSource):
     """
@@ -360,13 +382,23 @@ def buildBodyDataset(folderPath, commitID, label):
     
     for txtFile in os.listdir(folderPath):
         txtFilePath = os.path.join(folderPath, txtFile)
-        
-        with open(txtFilePath, 'r') as txtFileRead:
+        with open(txtFilePath, 'r') as json_file:
+            data = json.load(json_file)
             className = txtFile.split(".")[0]
             methodName = txtFile.split(".")[1]
-            
-            body = txtFileRead.read()
-            dataset.append({"Commit": commitID, "ClassName": className, "MethodName": methodName, "ProjectName": getProjectName(folderPath), "Body": body, "Label": label})
+
+            dataset.append({"Commit": commitID, "ClassName": className, "MethodName": methodName, "ProjectName": getProjectName(folderPath), 
+                "CyclomaticComplexity": data["CyclomaticComplexity"], 
+                "HasTimeoutInAnnotations": data["HasTimeoutInAnnotations"], 
+                "NumberOfAsserts": data["NumberOfAsserts"], 
+                "NumberOfAsynchronousWaits": data["NumberOfAsynchronousWaits"], 
+                "NumberOfDates": data["NumberOfDates"], 
+                "NumberOfFiles": data["NumberOfFiles"], 
+                "NumberOfLines": data["NumberOfLines"], 
+                "NumberOfRandoms": data["NumberOfRandoms"], 
+                "NumberOfThreads": data["NumberOfThreads"], 
+                "Body": data["Body"],
+                "Label": label})    
     return dataset
 
 def handleDataset(dataset, percentage):

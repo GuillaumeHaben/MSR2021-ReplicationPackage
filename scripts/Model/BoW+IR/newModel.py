@@ -23,7 +23,7 @@ def main():
     checkUsage()
 
     # Parameters
-    nbTrees = 50
+    nbTrees = 100
 
     # Load Data
     datasetPath = sys.argv[1]
@@ -34,12 +34,33 @@ def main():
 
     # Work only on Oozie project
     # data = data[data["ProjectName"] == "oozie"]
-    data_train, data_test = train_test_split(data, test_size=0.1, stratify=data['Label'])
+    # data_train, data_test = train_test_split(data, test_size=0.1, stratify=data['Label'])
+    FT = data[data["Label"] == 1]
+    NFT = data[data["Label"] == 0]
+
+    print("len(FT)", len(FT))
+    print("len(NFT)", len(NFT))
+
+    FT_train, FT_test = train_test_split(FT, test_size=0.2, shuffle=False)
+    NFT_train, NFT_test = train_test_split(NFT, test_size=0.2, shuffle=False)
+    # NFT_train = NFT[NFT["Commit"] == "7bb06e78bac05e0e24c6ea81b34aa11f498ad61f"]
+    # NFT_test = NFT[NFT["Commit"] == "58f6cf5130a06e95e9f0ef078abea082417340f7"]
+
+    print("len(FT_train)", len(FT_train))
+    print("len(FT_test)", len(FT_test))
+    print("len(NFT_train)", len(NFT_train))
+    print("len(NFT_test)", len(NFT_test))
+
+    data_train = FT_train.append(NFT_train)
+    data_test = FT_test.append(NFT_test)
 
     # Get Bodies, split Train and Test
-    dataBody = getTestAndCUT(data)
-    dataBody_train = getTestAndCUT(data_train)
-    dataBody_test = getTestAndCUT(data_test)
+    # dataBody = getTestAndCUT(data)
+    # dataBody_train = getTestAndCUT(data_train)
+    # dataBody_test = getTestAndCUT(data_test)
+    dataBody = getTest(data)
+    dataBody_train = getTest(data_train)
+    dataBody_test = getTest(data_test)
 
     print("\n#### Vocabulary size: \n")
 
@@ -49,51 +70,51 @@ def main():
     print("Bag Of Words: ", len(tokenizer.word_index))
 
     # TF-IDF Approach
-    vectorizer = TfidfVectorizer()
-    vectorizer.fit(dataBody)
-    print("TF-IDF: ", len(vectorizer.get_feature_names()))
+    # vectorizer = TfidfVectorizer()
+    # vectorizer.fit(dataBody)
+    # print("TF-IDF: ", len(vectorizer.get_feature_names()))
     
     # Random Forest Model
     bow_classifier = RandomForestClassifier(n_estimators = nbTrees, random_state = 0, verbose=0) 
-    tfidf_classifier = RandomForestClassifier(n_estimators = nbTrees, random_state = 0, verbose=0) 
+    # tfidf_classifier = RandomForestClassifier(n_estimators = nbTrees, random_state = 0, verbose=0) 
     
     # Tokenize data
     # BoW
     X_train_bow = tokenizer.texts_to_matrix(dataBody_train, mode='count')
     X_test_bow = tokenizer.texts_to_matrix(dataBody_test, mode='count')
     # TF-IDF
-    X_train_tfidf = vectorizer.transform(dataBody_train)
-    X_test_tfidf = vectorizer.transform(dataBody_test)
+    # X_train_tfidf = vectorizer.transform(dataBody_train)
+    # X_test_tfidf = vectorizer.transform(dataBody_test)
 
     y_train = data_train['Label'].values
     y_test = data_test['Label'].values
     
     # Fit model
     bow_classifier.fit(X_train_bow, y_train)
-    tfidf_classifier.fit(X_train_tfidf, y_train)
+    # tfidf_classifier.fit(X_train_tfidf, y_train)
 
     # Prediction
     prediction_bow = bow_classifier.predict(X_test_bow)
-    prediction_tfidf = tfidf_classifier.predict(X_test_tfidf)
+    # prediction_tfidf = tfidf_classifier.predict(X_test_tfidf)
 
     # Understand TN, TP, FN, FP
-    print("\n#### Prediction Matrix")
-    print("\nBag Of Words model:")
-    fp, tn, tp, fn = predictionMatrix(data_test, y_test, prediction_bow)
+    # print("\n#### Prediction Matrix")
+    # print("\nBag Of Words model:")
+    # fp, tn, tp, fn = predictionMatrix(data_test, y_test, prediction_bow)
     # print("\n Bag Of Words model:")
     # predictionMatrix(data_test, y_test, prediction_tfidf)
 
     # Get Metrics
     print("\n#### Metrics:")
-    print("\nBag Of Words model:")
+    # print("\nBag Of Words model:")
     metrics(y_test, prediction_bow)
     print("\nTF-IDF model:")
-    metrics(y_test, prediction_tfidf)
+    # metrics(y_test, prediction_tfidf)
 
     # Understanding the features
     print("\n#### Features understanding:\n")
     MostImportantWordsInBoW = featuresUnderstanding(tokenizer, bow_classifier, "tokenizer")
-    MostImportantWordsInTFIDF = featuresUnderstanding(vectorizer, tfidf_classifier, "vectorizer")
+    # MostImportantWordsInTFIDF = featuresUnderstanding(vectorizer, tfidf_classifier, "vectorizer")
 
     # tpAnalysis(MostImportantWordsInBoW, tp)
     # sandbox(data, datasetPath, MostImportantWordsInBoW)

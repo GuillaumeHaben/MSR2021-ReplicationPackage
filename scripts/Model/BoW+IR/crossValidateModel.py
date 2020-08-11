@@ -35,7 +35,7 @@ def main():
     datasetPath = sys.argv[1]
     data = pd.read_json(datasetPath)
 
-    data = data[data["ProjectName"] == "hbase"]
+    # data = data[data["ProjectName"] == "hb"]
     # data = data[data["Label"] == 0]
     # When test for a false positive:
     # data = data[data["MethodName"] == "testPrepareAdded"]
@@ -44,8 +44,8 @@ def main():
     # Shuffle Data
     data = shuffle(data)
     # dataBodyAndCUT = data['Body'].values
-    # dataBodyAndCUT = data['Body'].values + data['CUT_1'].values + data['CUT_2'].values + data['CUT_3'].values + data['CUT_4'].values + data['CUT_5'].values
-    dataBodyAndCUT = data['CUT_1'].values + data['CUT_2'].values + data['CUT_3'].values + data['CUT_4'].values + data['CUT_5'].values
+    dataBodyAndCUT = data['Body'].values + data['CUT_1'].values + data['CUT_2'].values + data['CUT_3'].values + data['CUT_4'].values + data['CUT_5'].values
+    # dataBodyAndCUT = data['CUT_1'].values + data['CUT_2'].values + data['CUT_3'].values + data['CUT_4'].values + data['CUT_5'].values
     # saveResults(dataBodyAndCUT, "F_BODY")
     
     # TF-IDF Approach
