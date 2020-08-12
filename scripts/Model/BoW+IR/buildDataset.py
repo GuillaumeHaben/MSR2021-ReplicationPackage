@@ -42,28 +42,22 @@ def main():
         counterProject += 1
         projectName = getProjectName(projectSource)
         dataset = []
-        # TO TEST, WITH SMALL PROJECT, TO REMOVE LATER
+        # List of projects to consider
         if projectName in ["achilles", "hbase", "logback", "okhttp", "oozie", "oryx", "togglz"]:
             print("    [INFO] Project: ", projectName, "[", counterProject ,"/", len(projectSources), "]")
-            # Should be able to delete two lines below
+            # For each project
             for project in projectList:
                 if getProjectName(project) == projectName:
                     commitFiles = [ f.path for f in os.scandir(project) if f.is_file() ]
                     
                     counterCommit = 0
+                    # For each commit of this project
                     for commitFile in commitFiles:
                         commitID = getCommitID(commitFile)
                         counterCommit += 1
                         print("____________________________________________________________")
                         print("[INFO] Commit ", commitID, "[", counterCommit ,"/", len(commitFiles), "]")
-                        # Different metrics to retrieve
-                        # if features == "CodeMetrics":
-                        #     getTestAndAddToDataset(commitID, projectSource, dataset, 1)
-                        # elif features == "BagOfWords":
                         getFinalTestsAndAddToDataset(commitID, projectSource, nbSimilarMethods, dataset, 1)
-                        # else:
-                        #     print("[ERROR] Wrong feature config")
-                        #     sys.exit(0)
 
             # If project contains no FT, we jump to next project
             if len(dataset) == 0:
@@ -72,7 +66,7 @@ def main():
                 dataset = []
                 continue
 
-            # Find commit where I want to take NFT
+            # Find commits where I want to get NFT
             NFTcommits = []
             print("[INFO]: Adding Non Flaky Tests to Dataset")
             for percentage in percentages:
@@ -82,15 +76,9 @@ def main():
                     NFTcommits.append(splittingCommit)
             
             print("[INFO]: Processing", len(NFTcommits), "commits.")
+            # For each commit where I want to get NFT
             for NFTcommit in NFTcommits:
-                # Different metrics to retrieve
-                # if features == "CodeMetrics":
-                #     dataset = getTestAndAddToDataset(NFTcommit, projectSource, dataset, 0)
-                # elif features == "BagOfWords":
                 dataset = getFinalTestsAndAddToDataset(NFTcommit, projectSource, nbSimilarMethods, dataset, 0)
-                # else:
-                #     print("[ERROR] Wrong feature config")
-                #     sys.exit(0)
 
             print("[STEP] Remove Non Flaky similar to Flaky.")
             dataset = removeFlakyFromNonFlaky(dataset, projectName)
