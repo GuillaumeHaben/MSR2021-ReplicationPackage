@@ -10,6 +10,7 @@ from tqdm import tqdm
 from operator import itemgetter
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.metrics.pairwise import linear_kernel
+import math as m
 
 # Dependencies
 # ./getAllMethodsMetrics.sh
@@ -43,7 +44,8 @@ def main():
         projectName = getProjectName(projectSource)
         dataset = []
         # List of projects to consider
-        if projectName in ["achilles", "hbase", "logback", "okhttp", "oozie", "oryx", "togglz"]:
+        if projectName in ["togglz", "achilles", "hbase", "logback", "okhttp", "oozie", "oryx"]:
+        # if projectName in ["togglz"]:
             print("    [INFO] Project: ", projectName, "[", counterProject ,"/", len(projectSources), "]")
             # For each project
             for project in projectList:
@@ -82,6 +84,10 @@ def main():
 
             print("[STEP] Remove Non Flaky similar to Flaky.")
             dataset = removeFlakyFromNonFlaky(dataset, projectName)
+
+            # Add CUT metrics
+            dataset = addCutMetric(dataset)
+
             # Save to disk
             displayResultsForProject(projectSource, dataset)  
             saveResults(dataset, projectName)
@@ -94,8 +100,9 @@ def getFinalTestsAndAddToDataset(commitID, projectSource, nbSimilarMethods, data
     print("\n[STEP] Find CUT for each test")
     for i in tqdm(range(len(allTests))):
         test = allTests[i]
-        testWithCUT = getTestAndCUT(test, allMethods, nbSimilarMethods)
-        testWithDate = getTestAndDate(testWithCUT, date, timestamp)
+        # testWithCUT = getTestAndCUT(test, allMethods, nbSimilarMethods)
+        # testWithCUT = getStaticCut(test, projectSource, commitID)
+        testWithDate = getTestAndDate(test, date, timestamp)
         dataset = saveToDataset(commitID, testWithDate, dataset, label)
     return dataset
 
@@ -120,7 +127,8 @@ def getMetrics(commitID, projectSource, label):
     date, timestamp = prepareProject(commitID, projectSource)
 
     # Get bodies
-    allMethods = getBodies(projectSource, commitID, "method", label)
+    allMethods = []
+    #allMethods = getBodies(projectSource, commitID, "method", label)
     allTests = getBodies(projectSource, commitID, "test", label)
 
     # Clean project
@@ -385,6 +393,7 @@ def buildBodyDataset(folderPath, commitID, label):
                 "NumberOfLines": data["NumberOfLines"], 
                 "NumberOfRandoms": data["NumberOfRandoms"], 
                 "NumberOfThreads": data["NumberOfThreads"], 
+                "StaticCUT": data["StaticCUT"],
                 "Body": data["Body"],
                 "Label": label})    
     return dataset
@@ -468,6 +477,52 @@ def displayResultsForProject(projectSource, dataset):
     print("[INFO] Project", getProjectName(projectSource), "done.")
     print("[INFO] len(dataset): ", len(dataset))
     return
+
+def addCutMetric(dataset):
+    # Metrics to consider for the CUT
+    metrics = ["CyclomaticComplexity", "NumberOfAsynchronousWaits", "NumberOfDates", "NumberOfFiles", "NumberOfLines", "NumberOfRandoms", "NumberOfThreads"]
+    
+    # For each test
+    for i in range(len(dataset)):
+        # Init scores for test
+        # dataset[i]["Mean"] = {}
+        # dataset[i]["Total"] = {}
+        # dataset[i]["Maximum"] = {}
+        # dataset[i]["Minimum"] = {}
+
+        for metric in metrics:
+            # Init metric score
+            mean = 0
+            total = 0
+            maximum = 0
+            minimum = m.inf
+            # For each method in the CUT
+            for j in range(len(dataset[i]["StaticCUT"])):
+                # Total
+                total += dataset[i]["StaticCUT"][j][metric]
+                # Max
+                if dataset[i]["StaticCUT"][j][metric] > maximum:
+                    maximun = dataset[i]["StaticCUT"][j][metric]
+                # Min
+                if dataset[i]["StaticCUT"][j][metric] < minimum:
+                    minimum = dataset[i]["StaticCUT"][j][metric]
+            # Mean
+            if len(dataset[i]["StaticCUT"]) != 0:
+                mean = total / len(dataset[i]["StaticCUT"])
+            else:
+                minimum = 0
+            # Clean for JSON
+            # dataset[i]["Mean"][metric] = int(mean)
+            # dataset[i]["Total"][metric] = total
+            # dataset[i]["Maximum"][metric] = maximum
+            # dataset[i]["Minimum"][metric] = minimum
+            # Clean for Panda DATAFRAME
+            dataset[i]["Mean"+metric] = int(mean)
+            dataset[i]["Total"+metric] = total
+            dataset[i]["Maximum"+metric] = maximum
+            dataset[i]["Minimum"+metric] = minimum
+
+    return dataset
 
 def saveToDataset(commitID, test, dataset, label):
     """

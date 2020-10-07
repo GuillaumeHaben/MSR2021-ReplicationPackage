@@ -1,7 +1,8 @@
 
 import sys
 import os
-import json 
+import json
+import csv
 import pandas as pd
 import pickle
 import numpy as np
@@ -23,83 +24,18 @@ from collections import Counter
 
 # Parameters
 nbTrees = 100
-nbCUT = 5
-featureType = "CodeMetric" # "Body" or "CodeMetric"
+nbCUT = 1
+featureType = "Body" # "Body" or "CodeMetric"
 vectorType = "BagOfWords" # "BagOfWords" or "TF-IDF"
-trainSplit = 0.2
+trainSplit = 0.8
 smote = False
 
 # Global var
 # Code Metric Features without CUT
-featuresPosition = [8,10,13,14,15,16,17,18,19]
+featuresPosition = [3,5,29,30,31,32,33,34,35]
 # Code Metric Features with 5 CUT
-codeMetricPositionCUT1 = [23, 24, 25, 26, 27, 28, 29, 30, 31]
-codeMetricPositionCUT2 = [33, 34, 35, 36, 37, 38, 39, 40, 41]
-codeMetricPositionCUT3 = [43, 44, 45, 46, 47, 48, 49, 50, 51]
-codeMetricPositionCUT4 = [53, 54, 55, 56, 57, 58, 59, 60, 61]
-codeMetricPositionCUT5 = [63, 64, 65, 66, 67, 68, 69, 70, 71]
-featuresPositionAll = featuresPosition + codeMetricPositionCUT1 + codeMetricPositionCUT2 + codeMetricPositionCUT3 + codeMetricPositionCUT4 + codeMetricPositionCUT5
-featuresMeaning = {
-    8: "CyclomaticComplexity",
-    10: "HasTimeoutInAnnotations",
-    13: "NumberOfAsserts",
-    14: "NumberOfAsynchronousWaits",
-    15: "NumberOfDates",
-    16: "NumberOfFiles",
-    17: "NumberOfLines",
-    18: "NumberOfRandoms",
-    19: "NumberOfThreads",
-    22: "CUT_1_Body",
-    23: "CUT_1_CyclomaticComplexity",
-    24: "CUT_1_HasTimeoutInAnnotations",
-    25: "CUT_1_NumberOfAsserts",
-    26: "CUT_1_NumberOfAsynchronousWaits",
-    27: "CUT_1_NumberOfDates",
-    28: "CUT_1_NumberOfFiles",
-    29: "CUT_1_NumberOfLines",
-    30: "CUT_1_NumberOfRandoms",
-    31: "CUT_1_NumberOfThreads",
-    32: "CUT_2_Body",
-    33: "CUT_2_HasTimeoutInAnnotations",
-    34: "CUT_2_CyclomaticComplexity",
-    35: "CUT_2_NumberOfAsserts",
-    36: "CUT_2_NumberOfAsynchronousWaits",
-    37: "CUT_2_NumberOfDates",
-    38: "CUT_2_NumberOfFiles",
-    39: "CUT_2_NumberOfLines",
-    40: "CUT_2_NumberOfRandoms",
-    41: "CUT_2_NumberOfThreads",
-    42: "CUT_3_Body",
-    43: "CUT_3_CyclomaticComplexity",
-    44: "CUT_3_HasTimeoutInAnnotations",
-    45: "CUT_3_NumberOfAsserts",
-    46: "CUT_3_NumberOfAsynchronousWaits",
-    47: "CUT_3_NumberOfDates",
-    48: "CUT_3_NumberOfFiles",
-    49: "CUT_3_NumberOfLines",
-    50: "CUT_3_NumberOfRandoms",
-    51: "CUT_3_NumberOfThreads",
-    52: "CUT_4_Body",
-    53: "CUT_4_CyclomaticComplexity",
-    54: "CUT_4_HasTimeoutInAnnotations",
-    55: "CUT_4_NumberOfAsserts",
-    56: "CUT_4_NumberOfAsynchronousWaits",
-    57: "CUT_4_NumberOfDates",
-    58: "CUT_4_NumberOfFiles",
-    59: "CUT_4_NumberOfLines",
-    60: "CUT_4_NumberOfRandoms",
-    61: "CUT_4_NumberOfThreads",
-    62: "CUT_5_Body",
-    63: "CUT_5_CyclomaticComplexity",
-    64: "CUT_5_HasTimeoutInAnnotations",
-    65: "CUT_5_NumberOfAsserts",
-    66: "CUT_5_NumberOfAsynchronousWaits",
-    67: "CUT_5_NumberOfDates",
-    68: "CUT_5_NumberOfFiles",
-    69: "CUT_5_NumberOfLines",
-    70: "CUT_5_NumberOfRandoms",
-    71: "CUT_5_NumberOfThreads"
-}
+codeMetricPositionCUT = [7,8,9,10,11,12,13,14,15,16,17,18,19,20,22,23,24,25,26,27,28,39,40,41,42,43,44,45]
+featuresPositionAll = featuresPosition + codeMetricPositionCUT
 infoCommitNFT = {
     "achilles": {0.2: "4466d8d396438b08b3291346a0db2554623db367", 0.6: "4466d8d396438b08b3291346a0db2554623db367", 0.7: "4466d8d396438b08b3291346a0db2554623db367", 0.8: "4466d8d396438b08b3291346a0db2554623db367", 0.9: "a10c468cad70a42ca3e9acdca1f0ad0b6bbfe365", 1.0: "a10c468cad70a42ca3e9acdca1f0ad0b6bbfe365"},
     "hbase": {0.2: "a309d26e8c6636b968f6beb8dab6510a6972f76c", 0.6: "851b6a9cfc98e4e0283f5babea156b8b5298fde2", 0.7: "0b590b5703f22d8a4f831dc20108f136bb8448f0", 0.8: "0b590b5703f22d8a4f831dc20108f136bb8448f0", 0.9: "d380a628bfac05b158a059306edf68baa2b33abd", 1.0: "d59d054fc9abeab776d90709f64bb5bb59d1b673"},
@@ -119,53 +55,76 @@ def main():
     # Load Data
     datasetPath = sys.argv[1]
     data = pd.read_json(datasetPath)
+
+    precisionList = []
+    recallList = []
+    mccList = []
+    aucList = []
+
+    for i in range (0, 10):
+        # Build sets
+        data_train, data_test = buildTrainTestSets(data)
+        
+        # [TEST] Shuffle sets (no time constraint)
+        # data_train, data_test = train_test_split(data, test_size=testSplit, shuffle=True)
+
+        if featureType == "CodeMetric":
+            X_train = getFeatures(data_train)
+            X_test = getFeatures(data_test)
+            y_train = data_train['Label'].values
+            y_test = data_test['Label'].values
+        elif featureType == "Body":
+            # Tokenize, Vectorize and Build sets
+            X_train, X_test, y_train, y_test, tokenizer = tokenizeAndBuildSets(data, data_train, data_test)
+        else:
+            sys.exit(0)
+
+        
+        # SMOTE
+
+        # Before over sampling
+        # counter = Counter(y_train)
+        # print(counter)
+        # if smote == True:
+        #     oversample = SMOTE()
+        #     X_train, y_train = oversample.fit_resample(X_train, y_train)
+        #     # After over sampling
+        #     counter = Counter(y_train)
+        #     print(counter)
+
+
+        # Classifier
+        classifier = RandomForestClassifier(n_estimators = nbTrees, random_state = 0, verbose=0) 
     
-    # Build sets
-    data_train, data_test = buildTrainTestSets(data)
-    
-    # [TEST] Shuffle sets (no time constraint)
-    # data_train, data_test = train_test_split(data, test_size=testSplit, shuffle=True)
+        # Fit model
+        classifier = classifier.fit(X_train, y_train)
 
-    if featureType == "CodeMetric":
-        X_train = getFeatures(data_train)
-        X_test = getFeatures(data_test)
-        y_train = data_train['Label'].values
-        y_test = data_test['Label'].values
-    elif featureType == "Body":
-        # Tokenize, Vectorize and Build sets
-        X_train, X_test, y_train, y_test, tokenizer = tokenizeAndBuildSets(data, data_train, data_test)
-    else:
-        sys.exit(0)
+        # Prediction
+        prediction = classifier.predict(X_test)
 
-    
-    # SMOTE
+        # Get Metrics
+        precision, recall, mcc, auc = metrics(y_test, prediction)
 
-    # Before over sampling
-    counter = Counter(y_train)
-    print(counter)
-    if smote == True:
-        oversample = SMOTE()
-        X_train, y_train = oversample.fit_resample(X_train, y_train)
-        # After over sampling
-        counter = Counter(y_train)
-        print(counter)
+        # Add metrics to history of metrics
+        precisionList.append(precision)
+        recallList.append(recall)
+        mccList.append(mcc)
+        aucList.append(auc)
 
-
-    # Classifier
-    classifier = RandomForestClassifier(n_estimators = nbTrees, random_state = 0, verbose=0) 
-   
-    # Fit model
-    classifier = classifier.fit(X_train, y_train)
-
-    # Prediction
-    prediction = classifier.predict(X_test)
-
-    # Get Metrics
-    metrics(y_test, prediction)
+    print("\n[STEP] Overall Metrics")
+    print("Precision Mean: ", round(np.mean(precisionList), 2))
+    print("Precision Std: ", round(np.std(precisionList), 2))
+    print("Recall Mean: ", round(np.mean(recallList), 2))
+    print("Recall Std: ", round(np.std(recallList), 2))
+    print("MCC Mean: ", round(np.mean(mccList), 2))
+    print("MCC Std: ", round(np.std(mccList), 2))
+    print("AUC Mean: ", round(np.mean(aucList), 2))
+    print("AUC Std: ", round(np.std(aucList), 2))
 
     # Understanding the features
     if featureType == "CodeMetric" and nbCUT == 0:
-        mostImportantMetrics(classifier)
+        # mostImportantMetrics(classifier)
+        pass
     elif featureType == "Body":
         mostImportantWords(tokenizer, classifier)
     else:
@@ -205,6 +164,7 @@ def buildTrainTestSets(data):
     # Get FT and NFT
     FT = data[data["Label"] == 1]
     NFT = data[data["Label"] == 0]
+
     # Separate FT and NFT in train and test
     FT_train, FT_test = train_test_split(FT, test_size=1-trainSplit, shuffle=False)
     if getCommitNFT("train") == getCommitNFT("test"):
@@ -212,12 +172,31 @@ def buildTrainTestSets(data):
     else:
         NFT_train = NFT[NFT["Commit"] == getCommitNFT("train")]
         NFT_test = NFT[NFT["Commit"] == getCommitNFT("test")]
+
+    # Balance dataset
+    if len(NFT_train) >= len(FT_train):
+        NFT_train = NFT_train.sample(n = len(FT_train))
+    else:
+        FT_train = FT_train.sample(n = len(NFT_train))
+
+    # if len(NFT_test) >= len(FT_test):
+    #     NFT_test = NFT_test.sample(n = len(FT_test))
+    # else:
+    #     FT_test = FT_test.sample(n = len(NFT_test))
+    
+
     # Regroup FT and NFT together
     data_train = FT_train.append(NFT_train)
     data_test = FT_test.append(NFT_test)
     # Info
     print("Number of Flaky Tests:", len(FT))
     print("Number of Non Flaky Tests:", len(NFT))
+    print("data_train size:", len(data_train))
+    print("data_test size:", len(data_test))
+    print("NFT_train size:", len(NFT_train))
+    print("NFT_test size:", len(NFT_test))
+    print("FT_train size:", len(FT_train))
+    print("FT_test size:", len(FT_test))
     return data_train, data_test
 
 def tokenizeAndBuildSets(data, data_train, data_test):
@@ -280,51 +259,25 @@ def getFeatures(data):
     -------
     Body of Tests and possibly their CUT
     """
-    # Extend data with new Columns
-    data = extendData(data)
-    if nbCUT == 0:
-        if featureType == "Body":
+    if featureType == "Body":
+        if nbCUT != 0:
+            newData = []
+            for index, test in data.iterrows():
+                cutBody = ""
+                for method in test["StaticCUT"]:
+                    cutBody += method["Body"]
+                extendedBody = test["Body"] + cutBody
+                newData.append(extendedBody)
+            data = newData
+        else:
             data = data["Body"].values
-        if featureType == "CodeMetric":
+        return data
+    if featureType == "CodeMetric":
+        if nbCUT != 0:
+            data = data.iloc[:, featuresPositionAll].values
+        else:
             data = data.iloc[:, featuresPosition].values
         return data
-    elif nbCUT == 1:
-        if featureType == "Body":
-            data = data["Body"].values + data["CUT_1_Body"].values
-        if featureType == "CodeMetric":
-            featuresPositionExtended = featuresPosition + codeMetricPositionCUT1
-            data = data.iloc[:, featuresPositionExtended].values
-        return data
-    elif nbCUT == 2:
-        if featureType == "Body":
-            data = data["Body"].values + data["CUT_1_Body"].values + data["CUT_2_Body"].values
-        if featureType == "CodeMetric":
-            featuresPositionExtended = featuresPosition + codeMetricPositionCUT1 + codeMetricPositionCUT2
-            data = data.iloc[:, featuresPositionExtended].values
-        return data
-    elif nbCUT == 3:
-        if featureType == "Body":
-            data = data["Body"].values + data["CUT_1_Body"].values + data["CUT_2_Body"].values + data["CUT_3_Body"].values
-        if featureType == "CodeMetric":
-            featuresPositionExtended = featuresPosition + codeMetricPositionCUT1 + codeMetricPositionCUT2 + codeMetricPositionCUT3
-            data = data.iloc[:, featuresPositionExtended].values
-        return data
-    elif nbCUT == 4:
-        if featureType == "Body":
-            data = data["Body"].values + data["CUT_1_Body"].values + data["CUT_2_Body"].values + data["CUT_3_Body"].values + data["CUT_4_Body"].values
-        if featureType == "CodeMetric":
-            featuresPositionExtended = featuresPosition + codeMetricPositionCUT1 + codeMetricPositionCUT2 + codeMetricPositionCUT3 + codeMetricPositionCUT4
-            data = data.iloc[:, featuresPositionExtended].values
-        return data
-    elif nbCUT == 5:
-        if featureType == "Body":
-            data = data["Body"].values + data["CUT_1_Body"].values + data["CUT_2_Body"].values + data["CUT_3_Body"].values + data["CUT_4_Body"].values + data["CUT_5_Body"].values
-        if featureType == "CodeMetric":
-            featuresPositionExtended = featuresPosition + codeMetricPositionCUT1 + codeMetricPositionCUT2 + codeMetricPositionCUT3 + codeMetricPositionCUT4 + codeMetricPositionCUT5
-            data = data.iloc[:, featuresPositionExtended].values
-        return data
-    else:
-        sys.exit(0)
     
 def extendData(data):
     data['CUT_1_Body'] = [val["Body"] for val in data["CUT_1"]]
@@ -384,7 +337,7 @@ def getCommitNFT(tset):
     if tset == "train":
         return infoCommitNFT[projectName][trainSplit]
     elif tset == "test":
-        return infoCommitNFT[projectName][1.0]
+        return infoCommitNFT[projectName][1]
     else:
         sys.exit(0)
 
@@ -456,11 +409,27 @@ def saveModel(classifier):
 
 def metrics(y_test, prediction):
     print("\n[STEP] Metrics")
-    print("Precision: ", precision_score(y_test, prediction))
-    print("Recall: ", recall_score(y_test, prediction))
-    print("MCC: ", matthews_corrcoef(y_test, prediction))
-    print("AUC: ", roc_auc_score(y_test, prediction))
+    precision = precision_score(y_test, prediction)
+    recall = recall_score(y_test, prediction)
+    mcc = matthews_corrcoef(y_test, prediction)
+    auc = roc_auc_score(y_test, prediction)
+    print("Precision: ", precision)
+    print("Recall: ", recall)
+    print("MCC: ", mcc)
+    print("AUC: ", auc)
     print("Test set size: ", len(prediction))
+    #saveMetrics(y_test, prediction)
+    return precision, recall, mcc, auc
+
+def saveMetrics(y_test, prediction):
+    print("\n[STEP] Save results to .csv")
+    prec = precision_score(y_test, prediction)
+    rec = recall_score(y_test, prediction)
+    mcc = matthews_corrcoef(y_test, prediction)
+    auc = roc_auc_score(y_test, prediction)
+    with open('./modelResults.csv', mode='w') as modelResults:
+        modelResults_writer = csv.writer(modelResults, delimiter=',', quotechar='"', quoting=csv.QUOTE_MINIMAL)
+        modelResults_writer.writerow([prec, " ", rec, " ", mcc, " ", auc])
     return
 
 def checkUsage():
