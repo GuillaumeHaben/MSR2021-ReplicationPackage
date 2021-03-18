@@ -1,0 +1,116 @@
+<?xml version="1.0" encoding="utf-8"?><testsuites><testsuite name="pytest" errors="0" failures="2" skipped="18" tests="83" time="50.128" timestamp="2020-11-19T22:45:51.396084" hostname="MP0256.local"><testcase classname="tests.test_alpm" name="test_alpm" time="0.000"><skipped type="pytest.skip" message="requires makepkg command">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/test_alpm.py:51: requires makepkg command</skipped></testcase><testcase classname="tests.test_alpm" name="test_alpm_strip" time="0.000"><skipped type="pytest.skip" message="requires makepkg command">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/test_alpm.py:59: requires makepkg command</skipped></testcase><testcase classname="tests.test_alpm" name="test_alpm_provided" time="0.000"><skipped type="pytest.skip" message="requires makepkg command">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/test_alpm.py:68: requires makepkg command</skipped></testcase><testcase classname="tests.test_alpm" name="test_alpm_provided_strip" time="0.000"><skipped type="pytest.skip" message="requires makepkg command">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/test_alpm.py:77: requires makepkg command</skipped></testcase><testcase classname="tests.test_alpm" name="test_alpm_missing_repo" time="0.000"><skipped type="pytest.skip" message="requires makepkg command">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/test_alpm.py:87: requires makepkg command</skipped></testcase><testcase classname="tests.test_alpm" name="test_alpm_missing_pkg" time="0.000"><skipped type="pytest.skip" message="requires makepkg command">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/test_alpm.py:96: requires makepkg command</skipped></testcase><testcase classname="tests.test_alpm" name="test_alpm_missing_provides" time="0.000"><skipped type="pytest.skip" message="requires makepkg command">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/test_alpm.py:105: requires makepkg command</skipped></testcase><testcase classname="tests.test_android_sdk" name="test_android_addon" time="0.161" /><testcase classname="tests.test_android_sdk" name="test_android_package" time="0.197" /><testcase classname="tests.test_android_sdk" name="test_android_package_channel" time="0.132" /><testcase classname="tests.test_anitya" name="test_anitya" time="0.351" /><testcase classname="tests.test_apt" name="test_apt" time="2.429" /><testcase classname="tests.test_apt" name="test_apt_srcpkg" time="2.476" /><testcase classname="tests.test_apt" name="test_apt_strip_release" time="3.197" /><testcase classname="tests.test_apt" name="test_apt_deepin" time="20.006"><failure message="tornado.simple_httpclient.HTTPTimeoutError: Timeout while connecting">get_version = &lt;function get_version.&lt;locals&gt;.__call__ at 0x108fde5e0&gt;
+
+    @flaky(max_runs=10)
+    async def test_apt_deepin(get_version):
+&gt;       assert await get_version("sigrok-firmware-fx2lafw", {
+            "source": "apt",
+            "mirror": "https://community-packages.deepin.com/deepin",
+            "suite": "apricot",
+        }) == "0.1.6-1"
+
+tests/test_apt.py:37: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/conftest.py:46: in __call__
+    newvers = await run(entries)
+tests/conftest.py:40: in run
+    return await main.run(result_coro, runner_coro)
+nvchecker/__main__.py:92: in run
+    return await result_fu
+nvchecker/core.py:361: in process_result
+    r1 = _process_result(r)
+nvchecker/core.py:325: in _process_result
+    logger.error('unexpected error happened',
+/usr/local/lib/python3.9/site-packages/structlog-20.1.0-py3.9.egg/structlog/_base.py:189: in _proxy_to_logger
+    args, kw = self._process_event(method_name, event, event_kw)
+/usr/local/lib/python3.9/site-packages/structlog-20.1.0-py3.9.egg/structlog/_base.py:149: in _process_event
+    event_dict = proc(self._logger, method_name, event_dict)
+tests/conftest.py:83: in proc
+    raise event_dict['exc_info']
+nvchecker/util.py:230: in run_one
+    version = await self.func(
+nvchecker_source/apt.py:80: in get_version
+    apt_release = await cache.get(
+nvchecker/util.py:177: in get
+    r = await fu
+nvchecker_source/apt.py:31: in get_url
+    res = await session.get(url)
+nvchecker/httpclient/base.py:36: in get
+    return await self.request(
+nvchecker/httpclient/base.py:60: in request
+    return await self.request_impl(
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+self = &lt;nvchecker.httpclient.tornado_httpclient.TornadoSession object at 0x108e36c10&gt;
+url = 'https://community-packages.deepin.com/deepin/dists/apricot/Release'
+
+    async def request_impl(
+      self, url: str, *,
+      method: str,
+      proxy: Optional[str] = None,
+      headers: Dict[str, str] = {},
+      params = (),
+      json = None,
+    ) -&gt; Response:
+      kwargs: Dict[str, Any] = {
+        'method': method,
+        'headers': headers,
+        'request_timeout': self.timeout,
+      }
+    
+      if json:
+        kwargs['body'] = _json.dumps(json)
+      kwargs['prepare_curl_callback'] = try_use_http2
+    
+      if proxy:
+        host, port = proxy.rsplit(':', 1)
+        kwargs['proxy_host'] = host
+        kwargs['proxy_port'] = int(port)
+    
+      if params:
+        q = urlencode(params)
+        url += '?' + q
+    
+      r = HTTPRequest(url, **kwargs)
+&gt;     res = await AsyncHTTPClient().fetch(
+        r, raise_error=False)
+E     tornado.simple_httpclient.HTTPTimeoutError: Timeout while connecting
+
+nvchecker/httpclient/tornado_httpclient.py:75: HTTPTimeoutError</failure></testcase><testcase classname="tests.test_archpkg" name="test_archpkg" time="0.161" /><testcase classname="tests.test_archpkg" name="test_archpkg_strip_release" time="0.132" /><testcase classname="tests.test_archpkg" name="test_archpkg_provided" time="0.174" /><testcase classname="tests.test_archpkg" name="test_archpkg_provided_strip" time="0.138" /><testcase classname="tests.test_aur" name="test_aur" time="0.200" /><testcase classname="tests.test_aur" name="test_aur_strip_release" time="0.199" /><testcase classname="tests.test_aur" name="test_aur_use_last_modified" time="0.179" /><testcase classname="tests.test_bitbucket" name="test_bitbucket" time="0.418" /><testcase classname="tests.test_bitbucket" name="test_bitbucket_max_tag" time="0.358" /><testcase classname="tests.test_bitbucket" name="test_bitbucket_max_tag_with_ignored" time="0.527" /><testcase classname="tests.test_cache" name="test_cache" time="0.013" /><testcase classname="tests.test_cmd" name="test_cmd" time="0.010" /><testcase classname="tests.test_cmd" name="test_cmd_complex" time="0.013"><failure message="RuntimeError: command exited with error">get_version = &lt;function get_version.&lt;locals&gt;.__call__ at 0x108f6e8b0&gt;
+
+    async def test_cmd_complex(get_version):
+&gt;       assert await get_version("example", {
+            "source": "cmd",
+            "cmd": "echo Meow | sed 's/meow/woof/i'",
+        }) == "woof"
+
+tests/test_cmd.py:15: 
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+tests/conftest.py:46: in __call__
+    newvers = await run(entries)
+tests/conftest.py:40: in run
+    return await main.run(result_coro, runner_coro)
+nvchecker/__main__.py:92: in run
+    return await result_fu
+nvchecker/core.py:361: in process_result
+    r1 = _process_result(r)
+nvchecker/core.py:322: in _process_result
+    logger.error(version.msg, **kw)
+/usr/local/lib/python3.9/site-packages/structlog-20.1.0-py3.9.egg/structlog/_base.py:189: in _proxy_to_logger
+    args, kw = self._process_event(method_name, event, event_kw)
+/usr/local/lib/python3.9/site-packages/structlog-20.1.0-py3.9.egg/structlog/_base.py:149: in _process_event
+    event_dict = proc(self._logger, method_name, event_dict)
+_ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _ _
+
+logger = &lt;PrintLogger(file=&lt;_io.TextIOWrapper name="&lt;_io.FileIO name=6 mode='rb+' closefd=True&gt;" mode='r+' encoding='utf-8'&gt;)&gt;
+method_name = 'error'
+event_dict = {'cmd': "echo Meow | sed 's/meow/woof/i'", 'error': 'sed: 1: "s/meow/woof/i": bad flag in substitute command: \'i\'', 'event': 'command exited with error', 'logger_name': 'nvchecker.core', ...}
+
+    def proc(logger, method_name, event_dict):
+      if method_name in ('warning', 'error'):
+        if 'exc_info' in event_dict:
+          raise event_dict['exc_info']
+        if not event_dict['event'].startswith(('rate limited', 'no-result')):
+&gt;         raise RuntimeError(event_dict['event'])
+E         RuntimeError: command exited with error
+
+tests/conftest.py:85: RuntimeError</failure></testcase><testcase classname="tests.test_cmd" name="test_cmd_with_percent" time="0.012" /><testcase classname="tests.test_container" name="test_container" time="1.403" /><testcase classname="tests.test_cpan" name="test_cpan" time="0.305" /><testcase classname="tests.test_cratesio" name="test_cratesio" time="0.242" /><testcase classname="tests.test_debianpkg" name="test_debianpkg" time="0.593" /><testcase classname="tests.test_debianpkg" name="test_debianpkg_strip_release" time="0.534" /><testcase classname="tests.test_debianpkg" name="test_debianpkg_suite" time="0.536" /><testcase classname="tests.test_gems" name="test_gems" time="0.357" /><testcase classname="tests.test_git" name="test_git" time="0.450" /><testcase classname="tests.test_gitea" name="test_gitea" time="1.521" /><testcase classname="tests.test_gitea" name="test_gitea_max_tag_with_include" time="1.314" /><testcase classname="tests.test_github" name="test_github" time="0.001"><skipped type="pytest.skip" message="KEYFILE not set">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/conftest.py:100: KEYFILE not set</skipped></testcase><testcase classname="tests.test_github" name="test_github_default_not_master" time="0.000"><skipped type="pytest.skip" message="KEYFILE not set">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/conftest.py:100: KEYFILE not set</skipped></testcase><testcase classname="tests.test_github" name="test_github_latest_release" time="0.000"><skipped type="pytest.skip" message="KEYFILE not set">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/conftest.py:100: KEYFILE not set</skipped></testcase><testcase classname="tests.test_github" name="test_github_max_tag" time="0.000"><skipped type="pytest.skip" message="KEYFILE not set">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/conftest.py:100: KEYFILE not set</skipped></testcase><testcase classname="tests.test_github" name="test_github_max_tag_with_ignored" time="0.000"><skipped type="pytest.skip" message="KEYFILE not set">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/conftest.py:100: KEYFILE not set</skipped></testcase><testcase classname="tests.test_github" name="test_github_with_path" time="0.000"><skipped type="pytest.skip" message="KEYFILE not set">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/conftest.py:100: KEYFILE not set</skipped></testcase><testcase classname="tests.test_github" name="test_github_with_path_and_branch" time="0.000"><skipped type="pytest.skip" message="KEYFILE not set">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/conftest.py:100: KEYFILE not set</skipped></testcase><testcase classname="tests.test_github" name="test_github_max_tag_with_include" time="0.001"><skipped type="pytest.skip" message="KEYFILE not set">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/conftest.py:100: KEYFILE not set</skipped></testcase><testcase classname="tests.test_github" name="test_github_latest_tag" time="0.001"><skipped type="pytest.skip" message="KEYFILE not set">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/conftest.py:100: KEYFILE not set</skipped></testcase><testcase classname="tests.test_gitlab" name="test_gitlab" time="0.328" /><testcase classname="tests.test_gitlab" name="test_gitlab_max_tag" time="0.403" /><testcase classname="tests.test_gitlab" name="test_gitlab_max_tag_with_include" time="0.327" /><testcase classname="tests.test_gitlab" name="test_gitlab_max_tag_with_ignored" time="0.330" /><testcase classname="tests.test_hackage" name="test_hackage" time="0.053" /><testcase classname="tests.test_manual" name="test_manual" time="0.003" /><testcase classname="tests.test_npm" name="test_npm" time="0.182" /><testcase classname="tests.test_packagist" name="test_packagist" time="0.185" /><testcase classname="tests.test_pacman" name="test_pacman" time="0.000"><skipped type="pytest.skip" message="requires pacman command">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/test_pacman.py:10: requires pacman command</skipped></testcase><testcase classname="tests.test_pacman" name="test_pacman_strip_release" time="0.000"><skipped type="pytest.skip" message="requires pacman command">/Users/guillaume.haben/Documents/Work/projects/pythonDataset/projects/nvchecker/tests/test_pacman.py:15: requires pacman command</skipped></testcase><testcase classname="tests.test_pagure" name="test_pagure" time="0.519" /><testcase classname="tests.test_pagure" name="test_pagure_with_ignored" time="0.414" /><testcase classname="tests.test_pagure" name="test_pagure_with_alternative_host" time="0.382" /><testcase classname="tests.test_pypi" name="test_pypi" time="0.111" /><testcase classname="tests.test_pypi" name="test_pypi_release" time="0.177" /><testcase classname="tests.test_pypi" name="test_pypi_pre_release" time="0.112" /><testcase classname="tests.test_regex" name="test_regex_httpbin_default_user_agent" time="0.007" /><testcase classname="tests.test_regex" name="test_regex_httpbin_user_agent" time="0.005" /><testcase classname="tests.test_regex" name="test_regex" time="0.004" /><testcase classname="tests.test_regex" name="test_missing_ok" time="0.004" /><testcase classname="tests.test_repology" name="test_repology" time="0.245" /><testcase classname="tests.test_repology" name="test_repology_subrepo" time="0.365" /><testcase classname="tests.test_repology" name="test_repology_bad_subrepo" time="0.299" /><testcase classname="tests.test_repology" name="test_repology_no_repo" time="0.002" /><testcase classname="tests.test_sparkle" name="test_sparkle" time="0.154" /><testcase classname="tests.test_substitute" name="test_substitute_prefix" time="0.002" /><testcase classname="tests.test_substitute" name="test_substitute_prefix_missing_ok" time="0.002" /><testcase classname="tests.test_substitute" name="test_substitute_regex" time="0.002" /><testcase classname="tests.test_substitute" name="test_substitute_regex_missing_ok" time="0.002" /><testcase classname="tests.test_substitute" name="test_substitute_regex_empty_to_pattern" time="0.002" /><testcase classname="tests.test_substitute" name="test_substitute_prefix_has_higher_priority" time="0.002" /><testcase classname="tests.test_ubuntupkg" name="test_ubuntupkg" time="0.197" /><testcase classname="tests.test_ubuntupkg" name="test_ubuntupkg_strip_release" time="0.189" /><testcase classname="tests.test_ubuntupkg" name="test_ubuntupkg_suite" time="0.187" /><testcase classname="tests.test_ubuntupkg" name="test_ubuntupkg_suite_with_paging" time="5.876" /></testsuite></testsuites>

@@ -1,0 +1,83 @@
+[
+    {
+        "functionName": "test_roulette",
+        "className": "deepchem.rl.tests.test_ppo.TestPPO",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_mpnn_reload",
+        "className": "deepchem.models.tests.test_mpnn",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_cgcnn_regression",
+        "className": "deepchem.models.tests.test_cgcnn",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_multitask_stratified_column_indices_masked",
+        "className": "deepchem.splits.tests.test_splitter.TestSplitter",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_mpnn_regression",
+        "className": "deepchem.models.tests.test_mpnn",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_gat_regression",
+        "className": "deepchem.models.tests.test_gat",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_gcn_regression",
+        "className": "deepchem.models.tests.test_gcn",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_gcn_reload",
+        "className": "deepchem.models.tests.test_gcn",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_mpnn_classification",
+        "className": "deepchem.models.tests.test_mpnn",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    }
+]

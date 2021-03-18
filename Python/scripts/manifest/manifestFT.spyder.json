@@ -1,0 +1,587 @@
+[
+    {
+        "functionName": "test_range_indicator_alt_modifier_response",
+        "className": "spyder.plugins.editor.panels.tests.test_scrollflag",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_timestamp",
+        "className": "spyder.utils.tests.test_encoding",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_update_decorations_when_scrolling",
+        "className": "spyder.plugins.editor.widgets.tests.test_decorations",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_kernel_crash",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_console_working_directory",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_pdb_multiline",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_pdb_ignore_lib[True]",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_pdb_ignore_lib[False]",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_kernel_kill",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_wrong_std_module[True]",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_wrong_std_module[False]",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_kernel_restart_after_manual_restart_and_crash",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_stderr_poll",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_pdb_eventloop[inline]",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_pdb_eventloop[qt5]",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_pdb_eventloop[tk]",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_pdb_eventloop[osx]",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_pdb_without_comm",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_recursive_pdb",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_stop_pdb",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_code_cache",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_pdb_code_and_cmd_separation",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_invalid_credentials",
+        "className": "spyder.widgets.github.tests.test_github_backend",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_empty_credentials",
+        "className": "spyder.widgets.github.tests.test_github_backend",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_fake_credentials_bad_repo",
+        "className": "spyder.widgets.github.tests.test_github_backend",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_bsdsockets",
+        "className": "spyder.utils.tests.test_bsdsocket",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_switcher_filter_unicode",
+        "className": "spyder.widgets.tests.test_switcher",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_editor_docstring_delayed_popup[def foo():\\n-def foo():\\n    \"\"\"\\n    \\n\\n    Returns\\n    -------\\n    None.\\n\\n    \"\"\"-16777221]",
+        "className": "spyder.plugins.editor.extensions.tests.test_docstring",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_conda_env_activation",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_banners",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_auto_backend",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_pylab_client",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_sympy_client",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_tab_rename_for_slaves",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_no_repeated_tabs_name",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_tabs_preserve_name_after_move",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_conf_env_vars",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_no_stderr_file",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_non_ascii_stderr_file",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_console_import_namespace",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_console_disambiguation",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_console_coloring",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_set_cwd",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_get_cwd",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_request_env",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_request_syspath",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_save_history_dbg",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_dbg_input",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_unicode_vars",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_read_stderr",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_values_dbg",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_execute_events_dbg",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_run_doctest",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_mpl_backend_change",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_clear_and_reset_magics_dbg",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_restart_kernel",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_load_kernel_file_from_id",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_load_kernel_file_from_location",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_load_kernel_file",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_sys_argv_clear",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_set_elapsed_time",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_stderr_file_is_removed_one_kernel",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_stderr_file_is_removed_two_kernels",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_stderr_file_remains_two_kernels",
+        "className": "spyder.plugins.ipythonconsole.tests.test_ipythonconsole",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    },
+    {
+        "functionName": "test_go_to_prev_next_cursor_position",
+        "className": "spyder.plugins.editor.tests.test_plugin",
+        "fileName": "",
+        "projectName": "",
+        "Label": false,
+        "isTest": false,
+        "Body": ""
+    }
+]
