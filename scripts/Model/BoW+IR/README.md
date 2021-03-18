@@ -33,3 +33,9 @@ Checkout to the commit of interest and mvn clean the project
 - cleanProject.sh
 
 Go back to master
+
+# Folders
+
+- results
+
+Contains dataset for projects when built for 20% training set, 80% test set. (Experience deprecated)

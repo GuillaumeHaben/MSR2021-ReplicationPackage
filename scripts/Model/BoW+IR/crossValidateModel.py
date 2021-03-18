@@ -43,8 +43,10 @@ def main():
     
     # Shuffle Data
     data = shuffle(data)
-    # dataBodyAndCUT = data['Body'].values
+    #dataBodyAndCUT = data['Body'].values
     dataBodyAndCUT = data['Body'].values + data['CUT_1'].values + data['CUT_2'].values + data['CUT_3'].values + data['CUT_4'].values + data['CUT_5'].values
+    
+    
     # dataBodyAndCUT = data['CUT_1'].values + data['CUT_2'].values + data['CUT_3'].values + data['CUT_4'].values + data['CUT_5'].values
     # saveResults(dataBodyAndCUT, "F_BODY")
     
@@ -70,7 +72,7 @@ def main():
     
     
     # Building Tokenizer and Vocabulary
-    tokenizer = Tokenizer(lower=True)
+    tokenizer = Tokenizer(lower=True, num_words=1000)
     tokenizer.fit_on_texts(dataBodyAndCUT)
     print("\n[Keras]")
     print("Vocabulary size: ", len(tokenizer.word_index) + 1)
@@ -78,7 +80,7 @@ def main():
 
     # Random Forest Model
     classifierKFold = RandomForestClassifier(n_estimators = nbTrees, random_state = 0, verbose=0) 
-    # X_keras = tokenizer.texts_to_matrix(dataBodyAndCUT, mode='count')
+    X_keras = tokenizer.texts_to_matrix(dataBodyAndCUT, mode='binary')
     y = data['Label'].values
 
     # Cross validation, K = 10, using stratified folds
@@ -92,7 +94,7 @@ def main():
         'mcc': make_scorer(mcc)
     }
 
-    scores = cross_validate(classifierKFold, X_tfidf, y, cv=k, scoring=scoring, verbose=4, n_jobs=10)
+    scores = cross_validate(classifierKFold, X_keras, y, cv=k, scoring=scoring, verbose=4, n_jobs=10)
     
     print("\nMetrics with K-fold:",k,", nbTree:",nbTrees)
     displayScoresInline(scores)

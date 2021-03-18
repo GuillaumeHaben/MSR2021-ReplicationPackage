@@ -1,3 +1,6 @@
 ./projects/*
 ./results/*
 ./sandbox/*o
+scripts/Model/BoW+IR/__pycache__/
+.vscode/
+.DS_Store

@@ -23,7 +23,7 @@ from collections import Counter
 
 # Parameters
 nbTrees = 100
-nbCUT = 0
+nbCUT = 3
 featureType = "Body" # "Body" or "CodeMetric"
 vectorType = "BagOfWords" # "BagOfWords" or "TF-IDF"
 trainSplit = 0.8
@@ -119,23 +119,32 @@ def main():
     # Load Data
     datasetPath = sys.argv[1]
     data = pd.read_json(datasetPath)
+
+    results = {
+        "precision": [],
+        "recall": [],
+        "f1": [],
+        "mcc": [],
+        "auc": []
+    }
     
+
     # Build sets
     data_train, data_test = buildTrainTestSets(data)
     
     # [TEST] Shuffle sets (no time constraint)
     # data_train, data_test = train_test_split(data, test_size=testSplit, shuffle=True)
 
-    if featureType == "CodeMetric":
-        X_train = getFeatures(data_train)
-        X_test = getFeatures(data_test)
-        y_train = data_train['Label'].values
-        y_test = data_test['Label'].values
-    elif featureType == "Body":
+    # if featureType == "CodeMetric":
+    #     X_train = getFeatures(data_train)
+    #     X_test = getFeatures(data_test)
+    #     y_train = data_train['Label'].values
+    #     y_test = data_test['Label'].values
+    # elif featureType == "Body":
         # Tokenize, Vectorize and Build sets
-        X_train, X_test, y_train, y_test, tokenizer = tokenizeAndBuildSets(data, data_train, data_test)
-    else:
-        sys.exit(0)
+    X_train, X_test, y_train, y_test, tokenizer = tokenizeAndBuildSets(data, data_train, data_test)
+    # else:
+    #     sys.exit(0)
 
     
     # SMOTE
@@ -143,19 +152,19 @@ def main():
     # Before over sampling
     counter = Counter(y_train)
     counterTest = Counter(y_test)
-    print(counter)
-    print(counterTest)
-    if smote == True:
-        oversample = SMOTE()
-        X_train, y_train = oversample.fit_resample(X_train, y_train)
-        # After over sampling
-        counter = Counter(y_train)
-        print(counter)
+    # print(counter)
+    # print(counterTest)
+    # if smote == True:
+    #     oversample = SMOTE()
+    #     X_train, y_train = oversample.fit_resample(X_train, y_train)
+    #     # After over sampling
+    #     counter = Counter(y_train)
+    #     print(counter)
 
 
     # Classifier
     classifier = RandomForestClassifier(n_estimators = nbTrees, random_state = 0, verbose=0) 
-   
+
     # Fit model
     classifier = classifier.fit(X_train, y_train)
 
@@ -163,15 +172,23 @@ def main():
     prediction = classifier.predict(X_test)
 
     # Get Metrics
-    metrics(y_test, prediction)
+    prec, rec, f1, mcc, auc = metrics(y_test, prediction)
+    results["precision"].append(prec)
+    results["recall"].append(rec)
+    results["f1"].append(f1)
+    results["mcc"].append(mcc)
+    results["auc"].append(auc)
+    
+    displayScores(results)
+
 
     # Understanding the features
-    if featureType == "CodeMetric" and nbCUT == 0:
-        mostImportantMetrics(classifier)
-    elif featureType == "Body":
-        mostImportantWords(tokenizer, classifier)
-    else:
-        sys.exit(0)
+    # if featureType == "CodeMetric" and nbCUT == 0:
+    #     mostImportantMetrics(classifier)
+    # elif featureType == "Body":
+    #     mostImportantWords(tokenizer, classifier)
+    # else:
+    #     sys.exit(0)
 
     # [OPTION] Load Model
     # classifier = loadModel("classifier.sav")
@@ -204,19 +221,48 @@ def buildTrainTestSets(data):
     data_test: FT and NFT for Test set
     """
     print("\n[STEP] Build Train and Test sets")
+    
     # Get FT and NFT
     FT = data[data["Label"] == 1]
     NFT = data[data["Label"] == 0]
+
+    # RQ1 WITH TIME VALIDATION
+
     # Separate FT and NFT in train and test
     FT_train, FT_test = train_test_split(FT, test_size=1-trainSplit, shuffle=False)
     if getCommitNFT("train") == getCommitNFT("test"):
-        NFT_train, NFT_test = train_test_split(NFT, test_size=1-trainSplit, shuffle=False)
+        NFT_train, NFT_test = train_test_split(NFT, test_size=1-trainSplit, shuffle=True)
     else:
         NFT_train = NFT[NFT["Commit"] == getCommitNFT("train")]
         NFT_test = NFT[NFT["Commit"] == getCommitNFT("test")]
-    # Regroup FT and NFT together
+
+    # RQ1 WITHOUT TIME VALIDATION
+
+    # Achilles
+    # NFT = NFT[NFT["Commit"] == "a10c468cad70a42ca3e9acdca1f0ad0b6bbfe365"]
+    # Hbase
+    # NFT = NFT[NFT["Commit"] == "d59d054fc9abeab776d90709f64bb5bb59d1b673"]
+    # # Okhttp
+    # NFT = NFT[NFT["Commit"] == "58f6cf5130a06e95e9f0ef078abea082417340f7"]
+    # # Oozie
+    # NFT = NFT[NFT["Commit"] == "4412cbc22e77dd712e8b5d4d2930c7b278623786"]
+    # # Oryx
+    # NFT = NFT[NFT["Commit"] == "7ab42c4fedc1e71eb93891ab572dda34b44ee325"]
+    # # Togglz
+    # NFT = NFT[NFT["Commit"] == "e7c7fa01edbb5e52003d7722eaf024e19a5d2a1f"]
+    # FT_train, FT_test = train_test_split(FT, test_size=1-trainSplit, shuffle=True)
+    # NFT_train, NFT_test = train_test_split(NFT, test_size=1-trainSplit, shuffle=True)
+
+
+    print("len(NFT_train):", len(NFT_train))
+    print("len(NFT_test):", len(NFT_test))
+    print("len(FT_train):", len(FT_train))
+    print("len(FT_test):", len(FT_test))
+
+    # # Regroup FT and NFT together
     data_train = FT_train.append(NFT_train)
     data_test = FT_test.append(NFT_test)
+
     # Info
     print("Number of Flaky Tests:", len(FT))
     print("Number of Non Flaky Tests:", len(NFT))
@@ -287,43 +333,10 @@ def getFeatures(data):
     if nbCUT == 0:
         if featureType == "Body":
             data = data["Body"].values
-        if featureType == "CodeMetric":
-            data = data.iloc[:, featuresPosition].values
-        return data
-    elif nbCUT == 1:
-        if featureType == "Body":
-            data = data["Body"].values + data["CUT_1_Body"].values
-        if featureType == "CodeMetric":
-            featuresPositionExtended = featuresPosition + codeMetricPositionCUT1
-            data = data.iloc[:, featuresPositionExtended].values
-        return data
-    elif nbCUT == 2:
-        if featureType == "Body":
-            data = data["Body"].values + data["CUT_1_Body"].values + data["CUT_2_Body"].values
-        if featureType == "CodeMetric":
-            featuresPositionExtended = featuresPosition + codeMetricPositionCUT1 + codeMetricPositionCUT2
-            data = data.iloc[:, featuresPositionExtended].values
         return data
     elif nbCUT == 3:
         if featureType == "Body":
-            data = data["Body"].values + data["CUT_1_Body"].values + data["CUT_2_Body"].values + data["CUT_3_Body"].values
-        if featureType == "CodeMetric":
-            featuresPositionExtended = featuresPosition + codeMetricPositionCUT1 + codeMetricPositionCUT2 + codeMetricPositionCUT3
-            data = data.iloc[:, featuresPositionExtended].values
-        return data
-    elif nbCUT == 4:
-        if featureType == "Body":
-            data = data["Body"].values + data["CUT_1_Body"].values + data["CUT_2_Body"].values + data["CUT_3_Body"].values + data["CUT_4_Body"].values
-        if featureType == "CodeMetric":
-            featuresPositionExtended = featuresPosition + codeMetricPositionCUT1 + codeMetricPositionCUT2 + codeMetricPositionCUT3 + codeMetricPositionCUT4
-            data = data.iloc[:, featuresPositionExtended].values
-        return data
-    elif nbCUT == 5:
-        if featureType == "Body":
-            data = data["Body"].values + data["CUT_1_Body"].values + data["CUT_2_Body"].values + data["CUT_3_Body"].values + data["CUT_4_Body"].values + data["CUT_5_Body"].values
-        if featureType == "CodeMetric":
-            featuresPositionExtended = featuresPosition + codeMetricPositionCUT1 + codeMetricPositionCUT2 + codeMetricPositionCUT3 + codeMetricPositionCUT4 + codeMetricPositionCUT5
-            data = data.iloc[:, featuresPositionExtended].values
+            data = data["Body"].values + data["Coverage"].values
         return data
     else:
         sys.exit(0)
@@ -463,8 +476,21 @@ def metrics(y_test, prediction):
     print("F1: ", f1_score(y_test, prediction))
     print("MCC: ", matthews_corrcoef(y_test, prediction))
     print("AUC: ", roc_auc_score(y_test, prediction))
-    print("Test set size: ", len(prediction))
-    return
+    prec = precision_score(y_test, prediction)
+    rec = recall_score(y_test, prediction)
+    f1 = f1_score(y_test, prediction)
+    mcc = matthews_corrcoef(y_test, prediction)
+    auc = roc_auc_score(y_test, prediction)
+    return prec, rec, f1, mcc, auc
+
+
+def displayScores(scores):
+    print("\n[STEP] Overall Results")
+    print("Precision: %0.2f (+/- %0.2f)" % (np.nanmean(scores["precision"]), np.nanstd(scores["precision"]) * 2))
+    print("Recall: %0.2f (+/- %0.2f)" % (np.nanmean(scores["recall"]), np.nanstd(scores["recall"]) * 2))
+    print("F1: %0.2f (+/- %0.2f)" % (np.nanmean(scores["f1"]), np.nanstd(scores["f1"]) * 2))
+    print("MCC: %0.2f (+/- %0.2f)" % (np.nanmean(scores["mcc"]), np.nanstd(scores["mcc"]) * 2))
+    print("AUC: %0.2f (+/- %0.2f)" % (np.nanmean(scores["auc"]), np.nanstd(scores["auc"]) * 2))
 
 def checkUsage():
     #Check the programs' arguments
